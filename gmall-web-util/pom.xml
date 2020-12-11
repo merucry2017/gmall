@@ -10,7 +10,7 @@
 
     <parent>
         <artifactId>gmall-parent</artifactId>
-        <groupId>com.atguigu.gmall</groupId>
+        <groupId>com.merc.gmall</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
