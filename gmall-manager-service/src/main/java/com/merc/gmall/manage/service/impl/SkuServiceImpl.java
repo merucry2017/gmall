@@ -1,7 +1,6 @@
 package com.merc.gmall.manage.service.impl;
 
-import com.alibaba.dubbo.common.json.JSON;
-import com.alibaba.dubbo.common.json.ParseException;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.merc.gmall.bean.PmsSkuAttrValue;
@@ -105,7 +104,7 @@ public class SkuServiceImpl implements SkuService {
             System.out.println("ip为"+ip+"的同学:"+Thread.currentThread().getName()+"从缓存中获取商品详情");
 
             try {
-                pmsSkuInfo = JSON.parse(skuJson, PmsSkuInfo.class);
+                pmsSkuInfo = JSON.parseObect(skuJson, PmsSkuInfo.class);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -124,11 +123,11 @@ public class SkuServiceImpl implements SkuService {
                 try {
                     if (pmsSkuInfo != null) {
                         // mysql查询结果存入redis
-                        jedis.set("sku:" + skuId + ":info", JSON.json(pmsSkuInfo));
+                        jedis.set("sku:" + skuId + ":info", JSON.toJSONString(pmsSkuInfo));
                     } else {
                         // 数据库中不存在该sku
                         // 为了防止缓存穿透将，null或者空字符串值设置给redis
-                        jedis.setex("sku:" + skuId + ":info", 60 * 3, JSON.json(""));
+                        jedis.setex("sku:" + skuId + ":info", 60 * 3, JSON.toJSONString(""));
                     }
                 } catch (IOException e){
                     e.printStackTrace();
