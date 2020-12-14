@@ -6,11 +6,13 @@ import com.merc.gmall.bean.OmsCartItem;
 import com.merc.gmall.bean.PmsSkuInfo;
 import com.merc.gmall.service.CartService;
 import com.merc.gmall.service.SkuService;
+import com.merc.gmall.util.CookieUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,9 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class CartController {
@@ -69,7 +69,7 @@ public class CartController {
 
     @ApiOperation(value = "计算购物车")
     @ApiImplicitParam
-    @PostMapping("cartList")
+    @GetMapping("cartList")
 //    @LoginRequired(loginSuccess = false)
     public ModelAndView cartList(HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
         ModelAndView model = new ModelAndView();
@@ -200,7 +200,11 @@ public class CartController {
             // 同步缓存
             cartService.flushCartCache(memberId);
         }
-        response.sendRedirect("success");
+        try {
+            response.sendRedirect("success.html");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean if_cart_exist(List<OmsCartItem> omsCartItems, OmsCartItem omsCartItem) {

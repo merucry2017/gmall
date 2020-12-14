@@ -19,6 +19,7 @@ import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -103,11 +104,7 @@ public class SkuServiceImpl implements SkuService {
         if(StringUtils.isNotBlank(skuJson)){//if(skuJson!=null&&!skuJson.equals(""))
             System.out.println("ip为"+ip+"的同学:"+Thread.currentThread().getName()+"从缓存中获取商品详情");
 
-            try {
-                pmsSkuInfo = JSON.parseObect(skuJson, PmsSkuInfo.class);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            pmsSkuInfo = JSON.parseObject(skuJson, PmsSkuInfo.class);
         }else{
             // 如果缓存中没有，查询mysql
             System.out.println("ip为"+ip+"的同学:"+Thread.currentThread().getName()+"发现缓存中没有，申请缓存的分布式锁："+"sku:" + skuId + ":lock");
@@ -129,7 +126,7 @@ public class SkuServiceImpl implements SkuService {
                         // 为了防止缓存穿透将，null或者空字符串值设置给redis
                         jedis.setex("sku:" + skuId + ":info", 60 * 3, JSON.toJSONString(""));
                     }
-                } catch (IOException e){
+                } catch (Exception e){
                     e.printStackTrace();
                 }
                 // 在访问mysql后，将mysql的分布锁释放

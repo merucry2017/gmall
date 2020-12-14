@@ -1,4 +1,4 @@
-package com.merc.gmall.item;
+package com.merc.gmall;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
