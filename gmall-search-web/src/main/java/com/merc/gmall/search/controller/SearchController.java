@@ -1,6 +1,7 @@
 package com.merc.gmall.search.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.merc.gmall.annotations.LoginRequired;
 import com.merc.gmall.bean.*;
 import com.merc.gmall.service.AttrService;
 import com.merc.gmall.service.SearchService;
@@ -38,7 +39,7 @@ public class SearchController {
         // 调用搜索服务，返回搜索结果
         List<PmsSearchSkuInfo> pmsSearchSkuInfos = searchService.list(pmsSearchParam);
         modelMap.put("skuLsInfoList", pmsSearchSkuInfos);
-
+        model.addObject("skuLsInfoList", pmsSearchSkuInfos);
         // 抽取检索结果锁包含的平台属性集合
         Set<String> valueIdSet = new HashSet<>();
         for (PmsSearchSkuInfo pmsSearchSkuInfo : pmsSearchSkuInfos) {
@@ -51,7 +52,7 @@ public class SearchController {
         // 根据valueId将属性列表查询出来
         List<PmsBaseAttrInfo> pmsBaseAttrInfos = attrService.getAttrValueListByValueId(valueIdSet);
         modelMap.put("attrList", pmsBaseAttrInfos);
-
+        model.addObject("attrList", pmsBaseAttrInfos);
         // 对平台属性集合进一步处理，去掉当前条件中valueId所在的属性组
         String[] delValueIds = pmsSearchParam.getValueId();
         if (delValueIds != null) {
@@ -81,15 +82,18 @@ public class SearchController {
                 pmsSearchCrumbs.add(pmsSearchCrumb);
             }
             modelMap.put("attrValueSelectedList", pmsSearchCrumbs);
+            model.addObject("attrValueSelectedList", pmsSearchCrumbs);
         }
 
 
 
         String urlParam = getUrlParam(pmsSearchParam);
         modelMap.put("urlParam", urlParam);
+        model.addObject("urlParam", urlParam);
         String keyword = pmsSearchParam.getKeyword();
         if (StringUtils.isNotBlank(keyword)) {
             modelMap.put("keyword", keyword);
+            model.addObject("keyword", keyword);
         }
         model.setViewName("list");
         return model;
@@ -162,7 +166,7 @@ public class SearchController {
     @ApiOperation(value = "获取商城首页",notes = "author:hxq")
     @ApiImplicitParam
     @GetMapping("index")
-//    @LoginRequired(loginSuccess = false)
+    @LoginRequired(loginSuccess = false)
     public ModelAndView index() {
         ModelAndView model = new ModelAndView();
         model.setViewName("index");

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+    <title></title>
+    <script type="text/javascript" src="/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/js/swiper.min.js"></script>
+    <script src="/index/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/index/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/index/js/swiper-3.4.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/swiper.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/success.css" />
+    <link rel="stylesheet" href="/index/css/swiper-3.4.2.min.css">
+    <link rel="stylesheet" href="/index/css/GL.css">
+ </head>
+
+    <body>
+    <!--头部-->
+    <div class="alert-info">
+        <div class="hd_wrap_top">
+        <ul class="hd_wrap_left">
+        <li class="hd_home"><i class="glyphicon glyphicon-home"></i>
+        <a href="search.gmall.com:8083/index">首页</a>
+        </li>
+
+        </ul>
+
+        <ul class="hd_wrap_right">
+        <li class="forel">
+        <a href="/javascript:;" class="link_login">你好,请登录</a>&nbsp;
+    <a href="/javascript:;" class="link_regist">免费注册</a>
+        </li>
+        <li class="spacer"></li>
+
+        <li>
+        <a href="/javascript:;">我的订单</a>
+        </li>
+
+
+
+        </ul>
+
+        </div>
+      </div>
+
+        <div class="nav-tabs-justified">
+        <div class="nav_wrap">
+
+        <div class="nav_top">
+        <div class="nav_top_one">
+        <a href="search.gmall.com:8083/index"><img src="/img/logo1.jpg"  style="height: 60px;width:180px;"  /></a>
+        </div>
+        <div class="nav_top_two"><input type="text" /><button>搜索</button></div>
+
+
+
+
+
+    </div>
+
+    </div>
+    </div>
+
+    <div class="main">
+
+        <div class="success-wrap">
+        <div class="w" id="result">
+        <div class="m succeed-box">
+        <div class="mc success-cont">
+        <div class="success-lcol">
+        <div class="success-top"><b class="succ-icon"></b>
+        <h3 class="ftx-02" th:text="${message}">出现未知错误</h3>
+            <a href=”#” onClick="javascript :history.back(-1);">返回</a>
+        </div>
+    <div class="p-item">
+        <div class="clr">
+    </div>
+        </div>
+        </div>
+        <div class="success-btns success-btns-new">
+        <div class="success-ad">
+        <a href="/#none"></a>
+        </div>
+        <div class="clr"></div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+
+    <!-- 秒杀广告  -->
+    <div class="section_second">
+        <!-- 第一层 -->
+        <div class="section_second_header">
+            <p class="section_second_header_img"></p>
+            <div class="section_second_header_left">
+                <p></p>
+                <span class="">秒杀</span>
+                <span>总有你想不到的低价</span>
+                <span>
+        </span>
+            </div>
+            <div class="section_second_header_right">
+                <p>当前场次</p>
+                <span class="section_second_header_right_hours">00</span>
+                <span class="section_second_header_right_mao">：</span>
+                <span class="section_second_header_right_minutes">00</span>
+                <span class="section_second_header_right_mao">：</span>
+                <span class="section_second_header_right_second">00</span>
+                <p>后结束</p>
+            </div>
+        </div>
+
+        <div class="section_second_list">
+            <div class="swiper-container swiper_section_second_list_left">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <ul>
+                            <li>
+                                <img src="/index/img/section_second_list_img1.jpg" alt="">
+                                <p>花王 (Merries) 妙而舒 纸尿裤 大号 L54片 尿不湿（9-14千克） （日本官方直采） 花王 (Merries) 妙而舒 纸尿裤 大号 L54片 尿不湿（9-14千</p>
+                                <span>¥83.9</span><s>¥99.9</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img2.jpg" alt="">
+                                <p>华为mate9 4GB+32GB版 月光银 移动联通电信4G手机 双卡</p>
+                                <span>¥17.90</span><s>¥29.90</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img3.jpg" alt="">
+                                <p>超能 植翠低泡洗衣液（鲜艳亮丽）2kg/袋装（新老包装随机</p>
+                                <span>¥20.70</span><s>¥44.90</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img4.jpg" alt="">
+                                <p>长城（GreatWall）红酒 特选5年橡木桶解百纳干红葡萄酒 整</p>
+                                <span>¥399.00</span><s>¥599.00</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img5.jpg" alt="">
+                                <p>惠普(HP)暗影精灵2代Pro 15.6英寸游戏笔记本电脑(i5-7300H</p>
+                                <span>¥5999.00</span><s>¥6499.00</s>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="swiper-slide">
+                        <ul>
+                            <li>
+                                <img src="/index/img/section_second_list_img6.jpg" alt="">
+                                <p>Apple iMac 21.5英寸一体机（2017新款四核Core i5 处理器/8GB内存/1TB/RP555显卡/4K屏 MNDY2CH/A） Apple iMac 21.5英寸一体机（2017新款四核Core i5 处理</p>
+                                <span>¥9588.00</span><s>¥10288.00</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img7.jpg" alt="">
+                                <p>中柏（Jumper）EZpad 4S Pro 10.6英寸二合一平板电脑（X5 z</p>
+                                <span>¥848.00</span><s>¥899.00</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img8.jpg" alt="">
+                                <p>飞利浦（PHILIPS）电动牙刷HX6761/03亮白型成人充电式声波震动牙刷粉色 飞利浦（PHILIPS）电动牙刷HX6761/03亮白型成人充电式声波
+                                </p>
+                                <span>¥379.00</span><s>¥698.00</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img9.jpg" alt="">
+                                <p>美的(Midea) 258升 变频智能三门冰箱 一级能效 风冷无霜 中门</p>
+                                <span>¥3088.00</span><s>¥3299.00</s>
+                            </li>
+                            <li>
+                                <img src="/index/img/section_second_list_img10.jpg" alt="">
+                                <p>【第二件减50元】蒙羊 内蒙古羔羊羊肋排 2.4斤</p>
+                                <span>¥99.90</span><s>¥199.00</s>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="swiper-button-prev second_list">
+                    <p></p>
+                </div>
+                <div class="swiper-button-next second_list">
+                    <p></p>
+                </div>
+            </div>
+            <ul class="section_second_list_right">
+                <li>
+                    <img src="/index/img/section_second_list_right_img.jpg" alt="">
+                </li>
+                <li>
+                    <img src="/index/img/section_second_list_right_img.png" alt="">
+                </li>
+                <div class="section_second_list_right_button">
+                    <p class="section_second_list_right_button_active"></p>
+                    <p></p>
+                </div>
+            </ul>
+        </div>
+    </div>
+    </body>
+    <script type="text/javascript" src="/js/success.js">
+        function search() {
+            var keyword=$("#searchText").val()
+            window.location.href="http://search.gmall.com:8083/list.html?keyword="+keyword;
+        }
+    </script>
+    <script type="text/javascript" src="/index/js/text.js"></script>
+    <script type="text/javascript" src="/index/js/header.js"></script>
+    <script type="text/javascript" src="/index/js/secend.js"></script>
+    <script type="text/javascript" src="/index/js/zz.js"></script>
+    <script type="text/javascript" src="/index/js/index.js"></script>
+    <script type="text/javascript" src="/index/js/left,top.js"></script>
+    <script type="text/javascript" src="/index/js/catalogLoader.js"></script>
+</html>

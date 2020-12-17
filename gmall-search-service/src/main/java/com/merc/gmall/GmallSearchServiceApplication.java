@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@ComponentScan(basePackages = "com.merc.gmall")
 public class GmallSearchServiceApplication {
 
 	public static void main(String[] args) {

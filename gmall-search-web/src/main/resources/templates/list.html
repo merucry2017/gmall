@@ -34,7 +34,7 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a href="#"><img src="/list/image/at.jpg" alt="" width="180px" height="70px"></a>
+        <a href="#"><img src="/list/image/logo2018.gif" alt="" width="180px" height="70px"></a>
     </div>
     <div class="header_form">
         <input id="keyword" name="keyword" type="text" placeholder="手机" />
@@ -71,7 +71,7 @@
         </div>
         <i><img src="/list/image/right-@1x.png" alt=""></i>
         <span th:if="${keyword}!=null" th:text="'&quot;'+${keyword}+'&quot;'">&quot;小米&quot;</span>
-        <a class="select-attr"   th:each="baseAttrValueSelected:${attrValueSelectedList}"    th:href="'list.html?'+${baseAttrValueSelected.urlParam}"   th:utext=" ${baseAttrValueSelected.valueName} +'<b> ✖ </b>'"  >
+        <a class="select-attr"   th:each="baseAttrValueSelected:${attrValueSelectedList}"    th:href="'list.html?'+${baseAttrValueSelected.urlParam}"   th:text=" ${baseAttrValueSelected.valueName} +'<b> ✖ </b>'"  >
             2G<b> ✖ </b>
         </a>
         <!-- <a class="select-attr"   href="#"      > 屏幕尺寸:5.1-5.5英寸<b> ✖ </b>
@@ -204,10 +204,10 @@
                             </p>
 
                             <p class="tab_R">
-                                <span th:text="'￥'+${#numbers.formatDecimal(skuLsInfo.price,1,2)}">¥5199.00</span>
+                                <span th:text="'￥'+${skuLsInfo.price != null?#numbers.formatDecimal(skuLsInfo.price,1,2):'5199.00'}">¥5199.00</span>
                             </p>
 
-                                <a href="#" title=""   th:onclick="'javascript:item(\''+${skuLsInfo.id}+'\')'" class="tab_JE" th:utext="${skuLsInfo.skuName}" >
+                                <a href="#" title=""   th:onclick="'javascript:item(\''+${skuLsInfo.id}+'\')'" class="tab_JE" th:text="${skuLsInfo.skuName}" >
                                     Apple iPhone 7 Plus (A1661) 32G 黑色 移动联通电信4G手机
                                 </a>
                         </div>

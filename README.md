@@ -14,3 +14,9 @@ gmall-search-web 搜索服务的前台 8083
 
 gmall-cart-service 购物车服务的后台 8074
 gmall-cart-web 购物车服务的前台 8084
+
+gmall-order-web 订单 8086
+gmall-order-service 订单服务 8076
+
+gmall-passport-web 用户认证中心 8085
+gmall-payment-web 支付 8087

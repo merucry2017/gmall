@@ -2,6 +2,7 @@ package com.merc.gmall.cart.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.merc.gmall.annotations.LoginRequired;
 import com.merc.gmall.bean.OmsCartItem;
 import com.merc.gmall.bean.PmsSkuInfo;
 import com.merc.gmall.service.CartService;
@@ -12,12 +13,11 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -42,7 +42,7 @@ public class CartController {
             required = true,paramType = "java.lang.String")
     })
     @PostMapping("checkCart")
-//    @LoginRequired(loginSuccess = false)
+    @LoginRequired(loginSuccess = false)
     public ModelAndView checkCart(String isChecked, String skuId, HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
         ModelAndView model = new ModelAndView();
         String memberId = (String)request.getAttribute("memberId");
@@ -70,7 +70,7 @@ public class CartController {
     @ApiOperation(value = "计算购物车")
     @ApiImplicitParam
     @GetMapping("cartList")
-//    @LoginRequired(loginSuccess = false)
+    @LoginRequired(loginSuccess = false)
     public ModelAndView cartList(HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
         ModelAndView model = new ModelAndView();
         List<OmsCartItem> omsCartItems = new ArrayList<>();
@@ -122,8 +122,9 @@ public class CartController {
             required = true,paramType = "int")
     })
     @PostMapping("addToCart")
-//    @LoginRequired(loginSuccess = false)
-    public void addToCart(String skuId, int quantity, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+    @LoginRequired(loginSuccess = false)
+    @ResponseBody
+    public ModelAndView addToCart(String skuId, int quantity, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         List<OmsCartItem> omsCartItems = new ArrayList<>();
 
         // 调用商品服务查询商品信息
@@ -200,11 +201,10 @@ public class CartController {
             // 同步缓存
             cartService.flushCartCache(memberId);
         }
-        try {
-            response.sendRedirect("success.html");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ModelAndView model = new ModelAndView("success");
+        model.addObject("skuInfo",skuInfo);
+        model.addObject("skuNum",quantity);
+        return model;
     }
 
     private boolean if_cart_exist(List<OmsCartItem> omsCartItems, OmsCartItem omsCartItem) {
@@ -221,6 +221,15 @@ public class CartController {
 
 
         return b;
+    }
+
+    @ApiOperation(value = "返回购物车",notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("One_JDshop.html")
+    public ModelAndView getOneJDshop(){
+        ModelAndView model = new ModelAndView();
+        model.setViewName("One_JDshop");
+        return model;
     }
 
 }

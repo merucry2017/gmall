@@ -81,7 +81,10 @@ public class SkuServiceImpl implements SkuService {
         PmsSkuInfo pmsSkuInfo = new PmsSkuInfo();
         pmsSkuInfo.setId(skuId);
         PmsSkuInfo skuInfo = pmsSkuInfoMapper.selectOne(pmsSkuInfo);
-
+        //该商品在数据库的数据出现异常
+        if(skuInfo==null){
+            return skuInfo;
+        }
         // sku的图片集合
         PmsSkuImage pmsSkuImage = new PmsSkuImage();
         pmsSkuImage.setSkuId(skuId);
@@ -179,7 +182,10 @@ public class SkuServiceImpl implements SkuService {
         PmsSkuInfo pmsSkuInfo = new PmsSkuInfo();
         pmsSkuInfo.setId(productSkuId);
         PmsSkuInfo pmsSkuInfo1 = pmsSkuInfoMapper.selectOne(pmsSkuInfo);
-
+        //在数据库没有查到该商品单元sku的信息
+        if(pmsSkuInfo1==null){
+            return false;
+        }
         BigDecimal price = pmsSkuInfo1.getPrice();
 
         if(price.compareTo(productPrice)==0){
