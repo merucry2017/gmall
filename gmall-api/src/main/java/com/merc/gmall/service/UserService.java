@@ -1,5 +1,6 @@
 package com.merc.gmall.service;
 
+import com.merc.gmall.bean.Result;
 import com.merc.gmall.bean.UmsMember;
 import com.merc.gmall.bean.UmsMemberReceiveAddress;
 
@@ -22,4 +23,6 @@ public interface UserService {
     UmsMember getOauthUser(UmsMember umsMemberCheck);
 
     UmsMemberReceiveAddress getReceiveAddressById(String receiveAddressId);
+
+    Result saveUser(UmsMember user);
 }

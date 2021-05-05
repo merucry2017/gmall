@@ -1,6 +1,7 @@
 package com.merc.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.merc.gmall.annotations.LoginRequired;
 import com.merc.gmall.bean.PmsBaseAttrInfo;
 import com.merc.gmall.bean.PmsBaseAttrValue;
 import com.merc.gmall.bean.PmsBaseSaleAttr;
@@ -10,6 +11,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,6 +21,13 @@ public class AttrController  {
 
     @Reference
     AttrService attrService;
+
+    @ApiOperation(value = "返回首页",notes = "author:hxq")
+    @GetMapping("/")
+    @LoginRequired(loginSuccess = false)
+    public void getIndex(HttpServletResponse resp) throws IOException {
+        resp.sendRedirect("http://localhost:8083/index");
+    }
 
     @ApiOperation(value = "获取商品spu基本销售属性列表",notes = "author:hxq")
     @ApiImplicitParam

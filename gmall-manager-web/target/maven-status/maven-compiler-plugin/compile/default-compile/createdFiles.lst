@@ -1,0 +1,5 @@
+com\merc\gmall\manage\controller\CatalogController.class
+com\merc\gmall\manage\util\PmsUploadUtil.class
+com\merc\gmall\GmallManageWebApplication.class
+com\merc\gmall\manage\controller\SpuController.class
+com\merc\gmall\manage\controller\AttrController.class

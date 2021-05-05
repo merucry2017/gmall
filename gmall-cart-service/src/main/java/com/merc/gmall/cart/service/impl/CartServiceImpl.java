@@ -71,8 +71,9 @@ public class CartServiceImpl implements CartService {
         }
 
         jedis.del("user:"+memberId+":cart");
-        jedis.hmset("user:"+memberId+":cart",map);
-
+        if(map.size() > 0) {
+            jedis.hmset("user:"+memberId+":cart",map);
+        }
         jedis.close();
     }
 
@@ -108,12 +109,33 @@ public class CartServiceImpl implements CartService {
 
         Example e = new Example(OmsCartItem.class);
 
-        e.createCriteria().andEqualTo("memberId",omsCartItem.getMemberId()).andEqualTo("productSkuId",omsCartItem.getProductSkuId());
+        e.createCriteria().andEqualTo("memberId", omsCartItem.getMemberId()).andEqualTo("productSkuId",omsCartItem.getProductSkuId());
 
         omsCartItemMapper.updateByExampleSelective(omsCartItem,e);
 
         // 缓存同步
         flushCartCache(omsCartItem.getMemberId());
 
+    }
+
+    @Override
+    public void allCheckCart(OmsCartItem omsCartItem) {
+        Example e = new Example(OmsCartItem.class);
+
+        e.createCriteria().andEqualTo("memberId", omsCartItem.getMemberId());
+
+        omsCartItemMapper.updateByExampleSelective(omsCartItem,e);
+
+        // 缓存同步
+        flushCartCache(omsCartItem.getMemberId());
+    }
+
+    @Override
+    public int deleteCartByUser(String memberId, String skuId) {
+        OmsCartItem omsCartItem = new OmsCartItem();
+        omsCartItem.setMemberId(memberId);
+        omsCartItem.setProductSkuId(skuId);
+        int result = omsCartItemMapper.deleteBySkuIdAndMemberId(memberId, skuId);
+        return result;
     }
 }

@@ -47,7 +47,7 @@ public class SpuServiceImpl implements SpuService {
         String productId = pmsProductInfo.getId();
 
         // 保存商品图片信息
-        List<PmsProductImage> spuImageList = pmsProductInfo.getPmsProductImageList();
+        List<PmsProductImage> spuImageList = pmsProductInfo.getSpuImageList();
         if(spuImageList!=null&&spuImageList.size()>0){
             for (PmsProductImage pmsProductImage : spuImageList) {
                 pmsProductImage.setProductId(productId);
@@ -56,7 +56,7 @@ public class SpuServiceImpl implements SpuService {
         }
 
         // 保存销售属性信息
-        List<PmsProductSaleAttr> spuSaleAttrList = pmsProductInfo.getPmsProductSaleAttrList();
+        List<PmsProductSaleAttr> spuSaleAttrList = pmsProductInfo.getSpuSaleAttrList();
         if(spuSaleAttrList!=null&&spuSaleAttrList.size()>0){
             for (PmsProductSaleAttr pmsProductSaleAttr : spuSaleAttrList) {
                 pmsProductSaleAttr.setProductId(productId);
@@ -122,6 +122,11 @@ public class SpuServiceImpl implements SpuService {
 //        }
 
         List<PmsProductSaleAttr> pmsProductSaleAttrs = pmsProductSaleAttrMapper.selectSpuSaleAttrListCheckBySku(productId,skuId);
+        for(PmsProductSaleAttr pmsProductSaleAttr : pmsProductSaleAttrs) {
+            pmsProductSaleAttr.getSpuSaleAttrValueList().sort((p1, p2) -> {
+                return Integer.parseInt(p1.getId()) - Integer.parseInt(p2.getId());
+            });
+        }
         return pmsProductSaleAttrs;
     }
 

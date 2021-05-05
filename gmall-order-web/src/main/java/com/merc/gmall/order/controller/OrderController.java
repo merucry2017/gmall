@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,6 +45,13 @@ public class OrderController {
 
     @Reference
     SkuService skuService;
+
+    @ApiOperation(value = "返回首页",notes = "author:hxq")
+    @GetMapping("/")
+    @LoginRequired(loginSuccess = false)
+    public void getIndex(HttpServletResponse resp) throws IOException {
+        resp.sendRedirect("http://localhost:8083/index");
+    }
 
     @ApiOperation(value = "提交订单", notes = "author:hxq")
     @ApiImplicitParams({
@@ -155,7 +163,7 @@ public class OrderController {
     @ApiOperation(value = "去购物车结算",notes = "author:hxq")
     @ApiImplicitParam
     @GetMapping("toTrade")
-//    @LoginRequired(loginSuccess = true)
+    @LoginRequired(loginSuccess = true)
     public ModelAndView toTrade(HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
         ModelAndView model = new ModelAndView();
         String memberId = (String) request.getAttribute("memberId");

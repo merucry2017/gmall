@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RestController
@@ -25,6 +26,22 @@ public class SearchController {
 
     @Reference
     AttrService attrService;
+
+    @ApiOperation(value = "返回首页",notes = "author:hxq")
+    @GetMapping("/")
+    @LoginRequired(loginSuccess = false)
+    public ModelAndView getIndex(HttpServletRequest request, ModelMap modelMap){
+        ModelAndView model = new ModelAndView("index");
+        String nickname = (String)request.getAttribute("nickname");
+
+        if(StringUtils.isNotBlank(nickname)) {
+            // 已经登录查询db
+            modelMap.put("nickname", nickname);
+        } else {
+            modelMap.put("nickname", " 请登录!");
+        }
+        return model;
+    }
 
     @ApiOperation(value = "搜索页面",notes = "author:hxq")
     @ApiImplicitParams({

@@ -1,0 +1,5 @@
+com\merc\gmall\util\CookieUtil.class
+com\merc\gmall\annotations\LoginRequired.class
+com\merc\gmall\config\WebMvcConfiguration.class
+com\merc\gmall\interceptors\AuthInterceptor.class
+com\merc\gmall\util\JwtUtil.class

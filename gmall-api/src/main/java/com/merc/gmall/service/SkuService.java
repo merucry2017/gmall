@@ -13,7 +13,7 @@ public interface SkuService {
 
     List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String productId);
 
-    List<PmsSkuInfo> getAllSku(String catalog3Id);
+    List<PmsSkuInfo> getAllSku();
 
     boolean checkPrice(String productSkuId, BigDecimal productPrice);
 

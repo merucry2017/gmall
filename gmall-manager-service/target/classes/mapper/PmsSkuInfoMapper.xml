@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.merc.gmall.manage.mapper.PmsSkuInfoMapper">
+
+    <select id="selectSkuSaleAttrValueListBySpu" resultMap="selectSkuSaleAttrValueListBySpuMap">
+        SELECT
+            si.*,ssav.*,si.id as si_id ,ssav.id as ssav_id
+        FROM
+            pms_sku_info si,
+            pms_sku_sale_attr_value ssav
+        WHERE
+            si.product_id = #{productId}
+        AND si.id = ssav.sku_id
+    </select>
+
+    <delete id="deleteBatchSkuBySpuId" >
+        DELETE
+                pms_sku_info ,
+                pms_sku_attr_value
+        FROM
+                pms_sku_info ,
+                pms_sku_attr_value
+        WHERE
+                pms_sku_info.product_id = #{spuId}
+        AND pms_sku_info.id = pms_sku_attr_value.sku_id
+    </delete>
+
+    <resultMap id="selectSkuSaleAttrValueListBySpuMap" type="com.merc.gmall.bean.PmsSkuInfo" autoMapping="true">
+        <result column="si_id" property="id"></result>
+        <collection property="skuSaleAttrValueList" ofType="com.merc.gmall.bean.PmsSkuSaleAttrValue" autoMapping="true">
+            <result column="ssav_id" property="id"></result>
+        </collection>
+    </resultMap>
+
+</mapper>

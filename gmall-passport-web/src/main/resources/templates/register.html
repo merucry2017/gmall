@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="/css/gm1.css"/>
+    <link rel="stylesheet" href="/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/layer.js" type="text/javascript" charset="utf-8"></script>
+    <title>登录</title>
+</head>
+<body>
+<!--顶部logo-->
+
+<header>
+    <a href="search.gmall.com:8083/index"><img src="/img/logo1.jpg"/></a><p>欢迎注册</p>
+
+</header>
+
+<div class="top-2">
+    <div class="top-2a">
+
+        <p> </p>
+    </div>
+</div>
+
+<!--大图-->
+<div class="top-3">
+    <div class="img_1">
+        <img src="/img/5731485aN1134b4f0.jpg"/>
+    </div>
+    <div id="sign">
+
+        <div class="si_cen">
+            <h2 class="act btn1">用户注册</h2>
+
+        </div>
+
+        <div class="si_bom1 tab" style="display: block;">
+            <div  class="error">
+                请输入账户名和密码
+            </div>
+
+            <form id="loginForm" action="./login" method="post">
+                <ul>
+                    <li class="top_1">
+                        <img src="/img/user_03.png" class="err_img1"/>
+
+                        <input type="text" id="username" name="username" placeholder=" 邮箱/用户名/已验证手机"  class="user"/>
+                    </li>
+                    <li>
+                        <img src="/img/user_06.png" class="err_img2"/>
+                        <input type="password" id="password" name="password" placeholder=" 密码" class="password"/>
+
+                    </li>
+                    <li>
+                        <img src="/img/user_06.png" class="err_img2"/>
+                        <input type="password" id="repassword" name="repassword" placeholder=" 确认密码" class="password"/>
+
+                    </li>
+
+                    <li class="ent"><button id="btn2" type="button" class="btn2"><a href="javascript:submitRegister();" class="a">注 &nbsp; &nbsp;册</a></button></li>
+
+                </ul>
+                <input type="hidden" id="originUrl" name="originUrl" th:value="${originUrl}"/>
+            </form>
+        </div>
+        <div class="si_out">
+
+            <ul>
+                <li>
+                    <a href="#">
+                        <img src="/img/qq.png" />
+                        <span>QQ</span>
+                    </a>
+                </li>
+                <li class="f4"> | </li>
+                <li>
+                    <a href="">
+                        <img src="/img/weixin.png" />
+                        <span>微信</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://api.weibo.com/oauth2/authorize?client_id=2161515525&response_type=code&redirect_uri=http://passport.gmall.com:8085/vlogin">
+                        <img src="/img/weibo.png" />
+                        <span>新浪微博</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h5 class="rig">
+                <img src="/img/4de5019d2404d347897dee637895d02b_25.png"/>
+                <span><a href="http://passport.gmall.com:8085/index">立即登录</a></span>
+            </h5>
+        </div>
+    </div>
+</div>
+
+
+<!--底部-->
+<!--<input type="text" th:value="${ReturnUrl}" id="ReturnUrl" />-->
+
+</body>
+<script language="JavaScript">
+
+    function submitRegister() {
+        var username = $("#username");
+        var password = $("#password");
+        var repassword= $("#repassword");
+        var loadingIndex = -1;
+
+        //对于表单数据不能用null进行判断，如果文本框为空，获取的是""
+        if($.trim(username.val()) == ""){
+            // alert("用户账号不能为空，请重新输入！");
+            layer.msg("用户账号不能为空，请重新输入！", {time:1000, icon:5, shift:6}, function () {
+                username.val("");
+                username.focus();
+            });
+            return false;
+        }
+
+        //密码是否与确认密码相同
+        if(password.val()!=repassword.val()){
+            // alert("用户账号不能为空，请重新输入！");
+            layer.msg("两次输入的密码不一致！请重新输入！", {time:1000, icon:5, shift:6}, function () {
+                password.val("");
+                repassword.val("");
+                password.focus();
+            });
+            return false;
+        }
+
+        $.ajax({
+            type : "post",
+            data :{
+                "username" : username.val(),
+                "password" : password.val()
+            },
+            url : "http://passport.gmall.com:8085/do_register",
+            beforeSend : function () {
+                //表单校验
+                loadingIndex = layer.msg('处理中', {icon: 16});
+                return true;
+            },
+            success : function(result){
+                layer.close(loadingIndex);
+                if(result.success){
+                    layer.msg("注册成功！", {time: 1000, icon: 6, shift: 6});
+                    document.getElementById("loginForm").reset();
+                }else{
+                    layer.msg(result.message , {time: 1000, icon: 5, shift: 6});
+                }
+            },
+            error : function(){
+                layer.msg("注册失败！", {time: 1000, icon: 5, shift: 6});
+            }
+        });
+    }
+
+
+    var btn2=document.getElementsByClassName('btn2')[0];
+    var user=document.getElementsByClassName('user')[0];
+    var pass=document.getElementsByClassName('password')[0];
+    var err=document.getElementsByClassName('error')[0];
+
+    var err_img1=document.getElementsByClassName('err_img1')[0];
+
+    var err_img2=document.getElementsByClassName('err_img2')[0];
+
+
+
+
+
+    user.onfocus=function(){
+
+        user.style.border='1px solid #999';
+
+    }
+
+    pass.onfocus=function(){
+
+        pass.style.border='1px solid #999';
+    }
+    user.onblur=function(){
+
+        user.style.border='1px solid green';
+    }
+    pass.onblur=function(){
+
+        pass.style.border='1px solid green';
+    }
+</script>
+</html>
