@@ -4,9 +4,10 @@
 	<head>
 		<meta charset="utf-8" />
 		<script src="js/jquery-3.1.1.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/JD2.css" />
-
-		<title></title>
+		<script src="layui/layui.js"></script>
+		<link href="css/JD2.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+		<title>结算页</title>
 	</head>
 
 	<body>
@@ -27,7 +28,7 @@
 				</ul>
 				<ul class="header-right">
 					<li th:text="'你好，'+${nickName}"> </li>
-					<li>|</li>
+					<li><a class="li_2" href="http://passport.gmall.com:8085/logout" style="color: red">注销</a></li>
 					<li class="spacer"></li>
 					<li><a href="">我的订单</a></li>
 					<li class="spacer"></li>
@@ -41,9 +42,9 @@
 
 		<!--logo图片-->
 		<div class="top-1">
-			<img src="img/logo1.jpg" class="img1" /><span>结算页</span>
+			<img class="img1" src="img/logo1.jpg" /><span>结算页</span>
 			<!--右侧绿色-->
-			<img src="img/08.png" class="img2" />
+			<img class="img2" src="img/08.png" />
 		</div>
 
 		<!--主体部分-->
@@ -52,22 +53,25 @@
 			<!--收货人信息-->
 			<div class="top-2">
 				<span>收货人信息</span>
-				<span>新增收货地址</span>
+				<span onclick="toAddress()">新增收货地址</span>
 			</div>
 
 
 
 			<!--地址-->
-			<div class="top-3">
+			<div style="display: flex;align-items: center;margin-left: 50px;">
 				<ul >
-				 <li class=".address default selected" th:each="userAddress:${userAddressList}"  >
-					 <input   name="deliveryAddress" type="radio"  th:value="${userAddress.id}"   th:checked="${userAddress.defaultStatus}=='1'" onclick="changeAddress()">
-					<span  th:text="${userAddress.name}" >收件人AAAA </span><span th:text="${userAddress.province}+${userAddress.city}+${userAddress.region}+${userAddress.detailAddress}"   >具体地址111 </span>
+				 <li class=".address default selected" onclick="modifyAddress()"  th:each="userAddress:${userAddressList}">
+					 <input   name="deliveryAddress" onclick="changeAddress()"  th:checked="${userAddress.defaultStatus}=='1'"   th:value="${userAddress.id}" type="radio">
+					<span  th:text="${userAddress.name}" >收件人AAAA </span>
+					 <span  th:text="${userAddress.phoneNumber}" >收件人AAAA </span>
+					 <span th:text="${userAddress.province}+${userAddress.city}+${userAddress.region}+${userAddress.detailAddress}"   >具体地址111 </span>
+					 <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" th:onclick="'modifyAddress('+${userAddress.id}+')'">修改</button>
+					 <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" th:onclick="'deleteAddress('+${userAddress.id}+')'">删除</button>
 				 </li>
 				</ul>
 			</div>
-		 
-			</form>
+
 			<div class="hh1"/></div>
 		<!--********************************************************************************************-->
 
@@ -87,7 +91,7 @@
 				<h5>商家：自营</h5>
 				<!--图片-->
 				<div class="yun1" th:each="omsOrderItem:${omsOrderItems}"  >
-					<img  th:src="${omsOrderItem.productPic}" class="yun"/>
+					<img  class="yun" th:src="${omsOrderItem.productPic}"/>
 					<div class="mi">
 						<div><p style="width: 500px;" th:text="${omsOrderItem.productName}" >商品名称111111111111 </p> <span style="float: right"> <span align="center" style="color: red" >   </span> <span   th:text="'X '+${omsOrderItem.productName}"> X 1   </span> <span  >有货</span>  <span  >无货</span>  </span> </div>
 
@@ -100,7 +104,7 @@
 		<div class="bto">
 			<div class="hh2"></div>
 			<h4 class="float">添加订单备注
-				<input id="orderCommentPage" type="text" maxlength="145" size="75" style="height: 22px" placeholder="请将购买需求在备注中说明"/>
+				<input id="orderCommentPage" maxlength="145" placeholder="请将购买需求在备注中说明" size="75" style="height: 22px" type="text"/>
 			</h4>
 			<br/>
 			<div class="hh3"></div>
@@ -114,24 +118,165 @@
 				<p class="yfze_a"><span class="z">应付总额：</span><span class="hq" th:text="'￥'+${totalAmount}" > ￥99999</span></p>
 
 
-			<button id="submitButton" class="tijiao">提交订单</button>
+			<button class="tijiao" id="submitButton">提交订单</button>
 		</div>
 		</div>
 
-		<form action="./submitOrder" method="post" id="orderForm">
-			<input name="receiveAddressId" id="receiveAddressId" value="1" type="hidden"/>
-			<input name="totalAmount" id="totalAmount" type="hidden" th:value="${totalAmount}"/>
+		<form action="./submitOrder" id="orderForm" method="post">
+			<input id="receiveAddressId" name="receiveAddressId" type="hidden" value="1"/>
+			<input id="totalAmount" name="totalAmount" th:value="${totalAmount}" type="hidden"/>
 
-			<input name="tradeCode" type="hidden"  th:value="${tradeCode}"  />
+			<input name="tradeCode" th:value="${tradeCode}"  type="hidden"  />
 		</form>
-		<script>
+
+		<script type="text/javascript">
+
+			var token;
+			$(document).ready(function () {
+				token = getQueryVariable("token");
+			})
+
+			layui.use(['form', 'layedit', 'laydate'], function(){
+				var form = layui.form
+						,layer = layui.layer
+						,layedit = layui.layedit
+						,laydate = layui.laydate;
+
+				//监听submit提交按钮 button ，lay-filter 为 【addressUpdate】 的按钮
+				form.on('submit(addressUpdate)', function(data){
+					if (!data.field.name) {
+						layer.msg("请填写收货人姓名");
+						return false;
+					}
+					if (!data.field.phoneNumber) {
+						layer.msg("请填写联系方式");
+						return false;
+					}
+					if (!data.field.province) {
+						layer.msg("请填写省份");
+						return false;
+					}
+					if (!data.field.city) {
+						layer.msg("请填写城市");
+						return false;
+					}
+					if (!data.field.region) {
+						layer.msg("请填写城区");
+						return false;
+					}
+					//此段代码可以获取提交的数据
+					/* layer.alert(JSON.stringify(data.field), {
+                         title: '最终的提交信息'
+                     })*/
+					//ajax 提交
+					$.ajax({
+						type: "POST",
+						dataType: "text",
+						url: "modifyAddressById" ,//url
+						data: $('#modifyAddressForm').serialize(),  //表单数据
+						success: function (result) {
+							if (result.success) {
+								layer.msg('修改成功，1秒后自动关闭该窗口');
+								//延迟1秒执行，目的是让用户看到提示
+								setTimeout( function(){
+									//1、先得到当前iframe层（弹出层）的索引  ///2、提交成功关闭弹出层窗口
+									var index = parent.layer.getFrameIndex(window.name);
+									parent.layer.close(index);
+								}, 1 * 1000 );
+							};
+						},
+						error : function() {
+							layer.msg('后台异常！未添加成功');
+						}
+					});
+					//阻止页面跳转
+					return false;
+				});
+			})
+
+			function getQueryVariable(variable) {
+				var query = window.location.search.substring(1);
+				var vars = query.split("&");
+				for (var i=0;i<vars.length;i++) {
+					var pair = vars[i].split("=");
+					if(pair[0] == variable){return pair[1];}
+				}
+				return(false);
+			}
+
+			function layerReturn() {
+				layer.closeAll('page');
+				window.location.href="http://order.gmall.com:8086/toTrade?token="+token;
+			}
+
+
+			function modifyAddress(id) {
+				var loadingIndex = -1;
+				$.ajax({
+					url:"getAddressById",
+					type:"GET",
+					data:{"id":id},
+					dataType:"JSON",
+					beforeSend: function () {
+						loadingIndex = layer.msg('处理中', {icon: 16});
+					},
+					success: function (umsMemberReceiveAddress) {
+						if (umsMemberReceiveAddress) {
+							$("#modifyId").attr("value", umsMemberReceiveAddress.id);
+							$("#modifyDefaultStatus").attr("value", umsMemberReceiveAddress.defaultStatus);
+							$("#modifyName").attr("value", umsMemberReceiveAddress.name)
+							$("#modifyPhoneNumber").attr("value", umsMemberReceiveAddress.phoneNumber);
+							$("#modifyPostCode").attr("value", umsMemberReceiveAddress.postCode);
+							$("#modifyProvince").attr("value", umsMemberReceiveAddress.province);
+							$("#modifyCity").attr("value", umsMemberReceiveAddress.city);
+							$("#modifyRegion").attr("value", umsMemberReceiveAddress.region);
+							$("#modifyDetailAddress").attr("value", umsMemberReceiveAddress.detailAddress);
+							layer.open({
+								type:1,
+								title:"修改收获地址",
+								closeBtn:false,
+								area:'600px;',
+								shade:0.8,
+								id:'LAY_layuipro',//设定一个id，防止重复弹出
+								btnAlign:'c',
+								moveType:1, // 拖拽模式，0或1
+								content:$('#modifyAddressForm').html(),
+							})
+						}
+					}
+				})
+			}
+
+			function deleteAddress(id) {
+				var loadingIndex = -1;
+				$.ajax({
+					url:"deleteAddressById?id="+id,
+					type:"DELETE",
+					data:{"id":id},
+					dataType:"JSON",
+					beforeSend: function () {
+						loadingIndex = layer.msg('处理中', {icon: 16});
+					},
+					success: function (result) {
+						layer.close(loadingIndex);
+						if (result.success) {
+							layer.msg("删除成功！", {time: 3000, icon: 6, shift: 6});
+							location.reload();
+						} else {
+							layer.msg(result.message, {time: 3000, icon: 5, shift: 6});
+						}
+					}
+				})
+			}
+
+			function toAddress() {
+				window.location.href="http://order.gmall.com:8086/toAddress?token="+token;
+			}
+
 			function changeAddress() {
 				var receiveAddressId = $("input[name='deliveryAddress']:checked").val();
-
 				$("#receiveAddressId").val(receiveAddressId);
-
             }
-
 
             $(function() {
 
@@ -176,5 +321,64 @@
 
 		</script>
 	</body>
+	<!-- 弹层	-->
+	<div id="modifyAddressForm" style="display: none">
+		<iframe id="iframe_display" name="iframe_display" style="display: none;">
 
+		</iframe>
+		<form class="layui-form layui-form-pane" id="modifyForm" action="/modifyAddressById" method="post" target="iframe_display">
+			<input type="hidden" name="id" id="modifyId"/>
+			<input type="hidden" name="defaultStatus" id="modifyDefaultStatus">
+			<div class="layui-form-item" style="margin-top: 40px">
+				<label class="layui-form-label">收货人姓名</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="name" id="modifyName"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">收货人电话</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="phoneNumber" id="modifyPhoneNumber" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">邮政编码</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="postCode" id="modifyPostCode" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">省份</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="province" id="modifyProvince" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">城市</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="city" id="modifyCity" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">城区</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="region" id="modifyRegion" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">详细地址</label>
+				<div class="layui-input-inline">
+					<input type="text" class="layui-input" name="detailAddress" id="modifyDetailAddress" />
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+<!--						<button type="button" class="layui-btn" onclick="sumbitModifyForm()">提交</button>-->
+					<button class="layui-btn" >修改</button>
+					<button type="button" class="layui-btn" onclick="layerReturn()">返回</button>
+				</div>
+			</div>
+		</form>
+
+	</div>
 </html>

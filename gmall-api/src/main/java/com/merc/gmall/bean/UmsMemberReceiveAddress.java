@@ -1,5 +1,6 @@
 package com.merc.gmall.bean;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
@@ -10,7 +11,8 @@ public class UmsMemberReceiveAddress implements Serializable {
     private String memberId;
     private String  name;
     private String  phoneNumber;
-    private int defaultStatus;
+    @Column(name = "default_status")
+    private String defaultStatus;
     private String postCode;
     private String province;
     private String city;
@@ -49,11 +51,11 @@ public class UmsMemberReceiveAddress implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public int getDefaultStatus() {
+    public String getDefaultStatus() {
         return defaultStatus;
     }
 
-    public void setDefaultStatus(int defaultStatus) {
+    public void setDefaultStatus(String defaultStatus) {
         this.defaultStatus = defaultStatus;
     }
 

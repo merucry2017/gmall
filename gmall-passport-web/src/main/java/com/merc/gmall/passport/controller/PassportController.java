@@ -20,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -117,9 +119,12 @@ public class PassportController {
 
         // 将token存入redis一份
         userService.addUserToken(token,memberId);
-
-
-        return "redirect:http://search.gmall.com:8083/index?token="+token+"&nickname=aaa";
+        try {
+            nickname = URLEncoder.encode(nickname, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "redirect:http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
     }
 
 
@@ -208,5 +213,50 @@ public class PassportController {
         UmsMember user = new UmsMember(username, password);
         Result result = userService.saveUser(user);
         return result;
+    }
+
+    @RequestMapping("logout")
+    @ResponseBody
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        String token = "";
+
+        String oldToken = CookieUtil.getCookieValue(request, "oldToken", true);
+        if (StringUtils.isNotBlank(oldToken)) {
+            token = oldToken;
+        }
+
+        String newToken = request.getParameter("token");
+        if (StringUtils.isNotBlank(newToken)) {
+            token = newToken;
+        }
+
+        Map<String,String> successMap = new HashMap<>();
+        if(StringUtils.isNotBlank(token)){
+
+            String ip = request.getHeader("x-forwarded-for");// 通过nginx转发的客户端ip
+            if(StringUtils.isBlank(ip)){
+                ip = request.getRemoteAddr();// 从request中获取ip
+                if(StringUtils.isBlank(ip)){
+                    ip = "127.0.0.1";
+                }
+            }
+
+            String successJson  = HttpclientUtil.doGet("http://passport.gmall.com:8085/verify?token=" + token+"&currentIp="+ip);
+
+            successMap = JSON.parseObject(successJson,Map.class);
+
+            String memberId = successMap.get("memberId");
+            String nickname = successMap.get("nickname");
+            //删除redis中的token
+            if(memberId != null && !memberId.equals("")){
+                userService.deleteUserToken(memberId);
+            }
+        }
+        try {
+            request.getSession().invalidate();
+            response.sendRedirect("index");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

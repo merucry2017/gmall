@@ -84,6 +84,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUserToken(String memberId) {
+        Jedis jedis = redisUtil.getJedis();
+        jedis.del("user:"+memberId+":token");
+        jedis.close();
+    }
+
+    @Override
     public UmsMember addOauthUser(UmsMember umsMember) {
         userMapper.insertSelective(umsMember);
 
@@ -140,8 +147,67 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    private UmsMember loginFromDb(UmsMember umsMember) {
+    @Override
+    public Result saveUmsMemberReceiveAddress(UmsMemberReceiveAddress umsMemberReceiveAddress) {
+        Result result = new Result();
+        result.setSuccess(false);
+        UmsMemberReceiveAddress address = umsMemberReceiveAddressMapper.selectOne(umsMemberReceiveAddress);
+        // 判断地址是否已经存在
+        if(address != null) {
+            result.setMessage("该地址已存在");
+            return result;
+        }
+        int state = umsMemberReceiveAddressMapper.insert(umsMemberReceiveAddress);
+        if(state == 1) {
+            result.setSuccess(true);
+        }
+        return result;
+    }
 
+    @Override
+    public Result deleteUmsMemberReceiveAddressById(String id) {
+        Result result = new Result();
+        result.setSuccess(false);
+        result.setMessage("删除失败！");
+        if(id == null || id.equals("")) {
+            return result;
+        }
+        UmsMemberReceiveAddress umsMemberReceiveAddress = new UmsMemberReceiveAddress();
+        umsMemberReceiveAddress.setId(id);
+        int state = umsMemberReceiveAddressMapper.delete(umsMemberReceiveAddress);
+        if(state == 1) {
+            result.setSuccess(true);
+            result.setMessage("删除成功！");
+        }
+        return result;
+    }
+
+    @Override
+    public Result modifyUmsMemberReceiveAddressById(UmsMemberReceiveAddress umsMemberReceiveAddress) {
+        Result result = new Result();
+        result.setSuccess(false);
+        result.setMessage("修改失败！");
+
+        int state = umsMemberReceiveAddressMapper.updateByPrimaryKey(umsMemberReceiveAddress);
+        if(state == 1) {
+            result.setSuccess(true);
+            result.setMessage("修改成功！");
+        }
+        return result;
+    }
+
+    @Override
+    public UmsMemberReceiveAddress getUmsMemberReceiveAddressById(String id) {
+        if(id == null || id.equals("")) {
+            return null;
+        }
+        UmsMemberReceiveAddress umsMemberReceiveAddress = new UmsMemberReceiveAddress();
+        umsMemberReceiveAddress.setId(id);
+        umsMemberReceiveAddress = umsMemberReceiveAddressMapper.selectOne(umsMemberReceiveAddress);
+        return umsMemberReceiveAddress;
+    }
+
+    private UmsMember loginFromDb(UmsMember umsMember) {
         UmsMember member = userMapper.findByUsername(umsMember.getUsername());
         if(member == null) {
             return null;
@@ -151,6 +217,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return member;
-
     }
+
+
 }

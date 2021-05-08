@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <script src="layui/layui.js"></script>
+	<script src="js/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/JD2.css"/>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <title>新增收货地址</title>
+</head>
+
+<body>
+<!--顶部-->
+<header>
+    <div class="header">
+        <ul class="header-left">
+            <li>
+                <img src="img/header_1.png"/>
+                <a href="http://search.gmall.com:8083/index">首页</a>
+            </li>
+            <li class="header-l-2">
+                <i class="fa fa-map-marker" style="color: #5C5452;"></i>
+                <a href="">北京</a>
+
+            </li>
+
+        </ul>
+        <ul class="header-right">
+            <li th:text="'你好，'+${nickName}"></li>
+            <li><a style="color: red" href="http://passport.gmall.com:8085/logout" class="li_2">注销</a></li>
+            <li class="spacer"></li>
+            <li><a href="">我的订单</a></li>
+            <li class="spacer"></li>
+
+        </ul>
+        <div style="clear: both;"></div>
+    </div>
+
+
+</header>
+
+<!--logo图片-->
+<div class="top-1">
+    <img src="img/logo1.jpg" class="img1"/><span>新增收货地址</span>
+</div>
+
+<!--主体部分-->
+<div class="section">
+    <form class="layui-form" id="address" name="umsMemberReceiveAddress">
+        <div class="layui-form-item" style="margin-top: 40px">
+            <label class="layui-form-label">收货人姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="name">
+                <input type="hidden" name="token">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">收货人电话</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="phoneNumber">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮政编码</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="postCode">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">请选择省市区</label>
+            <div class="layui-input-inline">
+                <select name="province" lay-filter="cate1" id="province">
+                    <option value="">请选择省</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="city" lay-filter="cate2" id="city">
+                    <option value="">请选择市</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="region" lay-filter="cate3" id="region">
+                    <option value="">请选择区</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">详细地址</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="detailAddress" style="width:600px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-submit lay-filter="createAddress">提交</button>
+                <button type="button" class="layui-btn"  onclick="toTrade()">返回购物车</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+<script src="/jquery/layer/layer.js" charset="utf-8"></script>
+<script type="text/javascript">
+    //http://search.gmall.com:8083/index?token=eyJhbGciOJ9....&username=wangwu#
+    var catalogList1, catalogList2, catalogList3;
+    var token;
+    var form, layer, upload;
+
+    $(document).ready(function () {
+        token = getQueryVariable("token");
+        ajaxGetCatalogList1();
+    })
+
+    // 返回购物车
+    function toTrade() {
+        window.location.href="http://order.gmall.com:8086/toTrade?token="+token;
+    }
+
+    // 获取url中的参数
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1];
+            }
+        }
+        return false;
+    }
+
+    // 获取一级菜单列表
+    function ajaxGetCatalogList1() {
+        var loadingIndex = -1;
+        $.ajax({
+            url: 'getAllHatProvince',
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function () {
+                loadingIndex = layer.msg('处理中', {icon: 16});
+            },
+            success: function (jsonData) {
+                layer.close(loadingIndex);
+                catalogList1 = jsonData;
+                renderFirstLevelCategory(catalogList1);
+            }
+        })
+    }
+
+    // 为一级菜单列表赋值
+    function renderFirstLevelCategory(realData) {
+        // var html = '<option value="">请选择一级分类</option>';
+        var html = "";
+
+        $.each(realData, function (index, eachObj) {
+            html += `<option value="` + eachObj.provinceId + `">` + eachObj.province + `</option>`;
+        })
+
+        $("select[name='province']").html(html)
+
+        form.render("select");
+    }
+
+    // 获取二级菜单列表
+    function ajaxGetCatalogList2(pid) {
+        var loadingIndex = -1;
+        $.ajax({
+            url: 'getAllHatCityByFather',
+            data: {"father": pid},
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function () {
+                loadingIndex = layer.msg('处理中', {icon: 16});
+            },
+            success: function (jsonData) {
+                layer.close(loadingIndex);
+                catalogList2 = jsonData;
+                renderSecondLevelCategory(catalogList2);
+            }
+        })
+    }
+
+    // 为二级菜单列表赋值
+    function renderSecondLevelCategory(realData) {
+        // var html = '<option value="">请选择二级分类</option>';
+        var html = '';
+
+        $.each(realData, function (index, eachObj) {
+            html += `<option value="` + eachObj.cityId + `">` + eachObj.city + `</option>`;
+        })
+
+        $("select[name='city']").html(html)
+
+        form.render("select");
+    }
+
+    // 获取三级菜单列表
+    function ajaxGetCatalogList3(pid) {
+        var loadingIndex = -1;
+        $.ajax({
+            url: 'getAllHatAreaByFather',
+            data: {"father": pid},
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function () {
+                loadingIndex = layer.msg('处理中', {icon: 16});
+            },
+            success: function (jsonData) {
+                layer.close(loadingIndex);
+                catalogList3 = jsonData;
+                renderSecondLevelCategory3(catalogList3);
+            }
+        })
+    }
+
+    // 为3级菜单列表赋值
+    function renderSecondLevelCategory3(realData) {
+        // var html = '<option value="">请选择三级分类</option>';
+        var html = '';
+
+        $.each(realData, function (index, eachObj) {
+            html += `<option value="` + eachObj.areaId + `">` + eachObj.area + `</option>`;
+        })
+
+        $("select[name='region']").html(html)
+
+        form.render("select");
+    }
+
+    var form, layer, upload;
+    layui.use(['form'], function () {
+        form = layui.form;
+        layer = layui.layer;
+        upload = layui.upload;
+
+        form.on('select(cate1)', function (data) {
+            //此处去获取2级列表数据
+            ajaxGetCatalogList2(data.value);
+        });
+
+        form.on('select(cate2)', function (data) {
+            //此处去获取3级列表数据
+            ajaxGetCatalogList3(data.value);
+        });
+
+        //监听提交
+        form.on('submit(createAddress)', function (data) {
+            var loadingIndex = -1;
+            if (!data.field.province) {
+                layer.msg("请选择省份");
+                return false;
+            }
+            if (!data.field.city) {
+                layer.msg("请选择城市");
+                return false;
+            }
+            if (!data.field.region) {
+                layer.msg("请选择城区");
+                return false;
+            }
+            data.field.province = $("#province option:selected").text();
+            data.field.city = $("#city option:selected").text();
+            data.field.region = $("#region option:selected").text();
+            data.field.token = token;
+            $.ajax({
+                url: "addAddress",
+                type: "POST",
+                dataType: "json",
+                data: data.field,
+                beforeSend: function () {
+                    loadingIndex = layer.msg('处理中', {icon: 16});
+                },
+                success: function (result) {
+                    layer.close(loadingIndex);
+                    if (result.success) {
+                        layer.msg("添加成功！", {time: 3000, icon: 6, shift: 6});
+                        // 清空表单
+                        document.getElementById("address").reset();
+                    } else {
+                        layer.msg(result.message, {time: 3000, icon: 5, shift: 6});
+                    }
+                },
+                error: function () {
+                    layer.msg("操作失败！", {time: 3000, icon: 5, shift: 6});
+                }
+            });
+        });
+
+    })
+</script>
+</html>

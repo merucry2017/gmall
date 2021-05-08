@@ -2,7 +2,6 @@ com\merc\gmall\bean\PmsBaseSaleAttr.class
 com\merc\gmall\bean\PmsBaseCatalog2.class
 com\merc\gmall\bean\PmsProductSaleAttr.class
 com\merc\gmall\bean\Result.class
-com\merc\gmall\bean\CorsProperties.class
 com\merc\gmall\bean\PmsBaseAttrValue.class
 com\merc\gmall\service\SkuService.class
 com\merc\gmall\service\SpuService.class

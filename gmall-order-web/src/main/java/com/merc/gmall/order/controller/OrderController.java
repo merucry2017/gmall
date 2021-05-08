@@ -2,22 +2,14 @@ package com.merc.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.merc.gmall.annotations.LoginRequired;
-import com.merc.gmall.bean.OmsCartItem;
-import com.merc.gmall.bean.OmsOrder;
-import com.merc.gmall.bean.OmsOrderItem;
-import com.merc.gmall.bean.UmsMemberReceiveAddress;
-import com.merc.gmall.service.CartService;
-import com.merc.gmall.service.OrderService;
-import com.merc.gmall.service.SkuService;
-import com.merc.gmall.service.UserService;
+import com.merc.gmall.bean.*;
+import com.merc.gmall.service.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,6 +38,9 @@ public class OrderController {
 
     @Reference
     SkuService skuService;
+
+    @Reference
+    AddressService addressService;
 
     @ApiOperation(value = "返回首页",notes = "author:hxq")
     @GetMapping("/")
@@ -166,6 +162,7 @@ public class OrderController {
     @LoginRequired(loginSuccess = true)
     public ModelAndView toTrade(HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
         ModelAndView model = new ModelAndView();
+        String token = request.getParameter("token");
         String memberId = (String) request.getAttribute("memberId");
         String nickname = (String) request.getAttribute("nickname");
 
@@ -200,6 +197,7 @@ public class OrderController {
         // 生成交易码，为了在提交订单时做交易码的校验
         String tradeCode = orderService.genTradeCode(memberId);
         model.addObject("tradeCode", tradeCode);
+        model.addObject("token", token);
         model.setViewName("trade");
         return model;
     }
@@ -226,4 +224,88 @@ public class OrderController {
         model.setViewName("one_order");
         return model;
     }
+
+    @ApiOperation(value = "返回中国所有省的名称", notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("getAllHatProvince")
+    public List<HatProvince> getAllHatProvince() {
+        List<HatProvince> hatProvinces = addressService.getAllHatProvince();
+
+        return hatProvinces;
+    }
+
+    @ApiOperation(value = "根据父id获取城市", notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("getAllHatCityByFather")
+    public List<HatCity> getAllHatCityByFather(String father) {
+        List<HatCity> hatCities = addressService.getAllHatCityByFather(father);
+        return hatCities;
+    }
+
+    @ApiOperation(value = "根据父id获取县区", notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("getAllHatAreaByFather")
+    public List<HatArea> getAllHatAreaByFather(String father) {
+        List<HatArea> hatAreas = addressService.getAllHatAreaByFather(father);
+        return hatAreas;
+    }
+
+    @ApiOperation(value = "返回新增地址页", notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("toAddress")
+    @LoginRequired(loginSuccess = true)
+    public ModelAndView toAddress(HttpServletRequest request) {
+        String token = request.getParameter("token");
+        String nickname = (String) request.getAttribute("nickname");        ModelAndView modelAndView = new ModelAndView("address");
+        modelAndView.addObject("token", token);
+        modelAndView.addObject("nickName", nickname);
+        return modelAndView;
+    }
+
+    @ApiOperation(value = "新增收获地址", notes = "author:hxq")
+    @ApiImplicitParam
+    @PostMapping("addAddress")
+    @LoginRequired(loginSuccess = true)
+    public Result addAddress(UmsMemberReceiveAddress umsMemberReceiveAddress, HttpServletRequest request) {
+        Result result = new Result();
+        result.setSuccess(false);
+        String memberId = (String) request.getAttribute("memberId");
+        umsMemberReceiveAddress.setMemberId(memberId);
+        umsMemberReceiveAddress.setDefaultStatus("0");
+        result = userService.saveUmsMemberReceiveAddress(umsMemberReceiveAddress);
+        ModelMap modelMap = new ModelMap();
+        String token = request.getParameter("token");
+        modelMap.addAttribute("token", token);
+        return result;
+    }
+
+    @ApiOperation(value = "删除收获地址", notes = "author:hxq")
+    @ApiImplicitParam
+    @DeleteMapping("deleteAddressById")
+    @LoginRequired(loginSuccess = true)
+    public Result deleteAddressById(@RequestParam String id, HttpServletRequest request) {
+        Result result = userService.deleteUmsMemberReceiveAddressById(id);
+        return result;
+    }
+
+    @ApiOperation(value = "修改收获地址", notes = "author:hxq")
+    @ApiImplicitParam
+    @PostMapping("modifyAddressById")
+    @LoginRequired(loginSuccess = true)
+    public Result modifyAddressById(UmsMemberReceiveAddress umsMemberReceiveAddress, HttpServletRequest request) {
+        String memberId = (String) request.getAttribute("memberId");
+        umsMemberReceiveAddress.setMemberId(memberId);
+        Result result = userService.modifyUmsMemberReceiveAddressById(umsMemberReceiveAddress);
+        return result;
+    }
+
+    @ApiOperation(value = "根据id收获地址", notes = "author:hxq")
+    @ApiImplicitParam
+    @GetMapping("getAddressById")
+    @LoginRequired(loginSuccess = true)
+    public UmsMemberReceiveAddress getAddressById(@RequestParam String id, HttpServletRequest request) {
+        UmsMemberReceiveAddress umsMemberReceiveAddress = userService.getUmsMemberReceiveAddressById(id);
+        return umsMemberReceiveAddress;
+    }
 }
+

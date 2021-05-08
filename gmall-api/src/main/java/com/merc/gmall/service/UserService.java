@@ -16,7 +16,9 @@ public interface UserService {
 
     void addUserToken(String token, String memberId);
 
-    public UmsMember addOauthUser(UmsMember umsMember);
+    void deleteUserToken(String memberId);
+
+    UmsMember addOauthUser(UmsMember umsMember);
 
     UmsMember checkOauthUser(UmsMember umsCheck);
 
@@ -25,4 +27,12 @@ public interface UserService {
     UmsMemberReceiveAddress getReceiveAddressById(String receiveAddressId);
 
     Result saveUser(UmsMember user);
+
+    Result saveUmsMemberReceiveAddress(UmsMemberReceiveAddress umsMemberReceiveAddress);
+
+    Result deleteUmsMemberReceiveAddressById(String id);
+
+    Result modifyUmsMemberReceiveAddressById(UmsMemberReceiveAddress umsMemberReceiveAddress);
+
+    UmsMemberReceiveAddress getUmsMemberReceiveAddressById(String id);
 }

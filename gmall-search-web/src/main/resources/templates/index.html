@@ -99,7 +99,7 @@
 <!--            </a>-->
           </li>
           <li>
-            <a href="http://passport.gmall.com:8085/go_register?ReturnUrl=http://search.gmall.com:8083/index" class="li_2">免费注册</a>
+            <a href="http://passport.gmall.com:8085/logout" class="li_2">注销</a>
           </li>
           <span>|</span>
           <li>
@@ -680,9 +680,9 @@
   {
     var query = window.location.search.substring(1);
     var vars = query.split("&");
-    for (var i=0;i<vars.length;i++) {
+    for (var i = 0; i < vars.length; i++) {
       var pair = vars[i].split("=");
-      if(pair[0] == variable){return pair[1];}
+      if(pair[0] == variable){return decodeURIComponent(pair[1]);}
     }
     return(false);
   }
