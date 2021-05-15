@@ -12,6 +12,7 @@ import com.merc.gmall.service.CartService;
 import com.merc.gmall.service.OrderService;
 import com.merc.gmall.util.RedisUtil;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.assertj.core.internal.cglib.asm.$MethodVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import tk.mybatis.mapper.entity.Example;
@@ -39,6 +40,7 @@ public class OrderServiceImpl implements OrderService {
     @Reference
     CartService cartService;
 
+    // 检查交易码
     @Override
     public String checkTradeCode(String memberId, String tradeCode) {
         Jedis jedis = null ;
@@ -65,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    // 更新交易码
     @Override
     public String genTradeCode(String memberId) {
 
@@ -81,22 +84,44 @@ public class OrderServiceImpl implements OrderService {
         return tradeCode;
     }
 
+    // 获取交易码
+    @Override
+    public String getTradeCode(String memberId) {
+
+        Jedis jedis = redisUtil.getJedis();
+
+        String tradeKey = "user:"+memberId+":tradeCode";
+
+        String tradeCode = jedis.get(tradeKey);
+
+        jedis.close();
+
+        return tradeCode;
+    }
+
+    // 保存订单
     @Override
     public void saveOrder(OmsOrder omsOrder) {
 
         // 保存订单表
         omsOrderMapper.insertSelective(omsOrder);
         String orderId = omsOrder.getId();
+        String memberId = omsOrder.getMemberId();
+        String productSkuId;
+
         // 保存订单详情
         List<OmsOrderItem> omsOrderItems = omsOrder.getOmsOrderItems();
         for (OmsOrderItem omsOrderItem : omsOrderItems) {
             omsOrderItem.setOrderId(orderId);
             omsOrderItemMapper.insertSelective(omsOrderItem);
             // 删除购物车数据
-            // cartService.delCart();
+            productSkuId = omsOrderItem.getProductSkuId();
+            cartService.deleteCartByUser(memberId, productSkuId);
         }
+        cartService.flushCartCache(memberId);
     }
 
+    // 通过交易码获取订单
     @Override
     public OmsOrder getOrderByOutTradeNo(String outTradeNo) {
 
@@ -108,6 +133,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    // 更新订单
     @Override
     public void updateOrder(OmsOrder omsOrder) {
         Example e = new Example(OmsOrder.class);
@@ -159,5 +185,25 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    @Override
+    public List<OmsOrder> getOrderByMemberId(String memberId) {
+        Example e = new Example(OmsOrder.class);
 
+        e.createCriteria().andEqualTo("memberId", memberId);
+
+        List<OmsOrder> omsOrders = omsOrderMapper.selectByExample(e);
+
+        return omsOrders;
+    }
+
+    @Override
+    public List<OmsOrderItem> getOrderItemByOrderSn(String orderSn) {
+        Example e = new Example(OmsOrder.class);
+
+        e.createCriteria().andEqualTo("orderSn", orderSn);
+
+        List<OmsOrderItem> omsOrderItems = omsOrderItemMapper.selectByExample(e);
+
+        return omsOrderItems;
+    }
 }

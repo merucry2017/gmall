@@ -26,6 +26,7 @@ public class SpuServiceImpl implements SpuService {
     @Autowired
     PmsSkuInfoMapper pmsSkuInfoMapper;
 
+    // 获取商品集合列表
     @Override
     public List<PmsProductInfo> spuList(String catalog3Id) {
 
@@ -37,6 +38,7 @@ public class SpuServiceImpl implements SpuService {
         return pmsProductInfos;
     }
 
+    // 保存商品集合信息
     @Override
     public void saveSpuInfo(PmsProductInfo pmsProductInfo) {
 
@@ -73,6 +75,7 @@ public class SpuServiceImpl implements SpuService {
 
     }
 
+    // 通过spuId获取商品集合列表
     @Override
     public List<PmsProductSaleAttr> spuSaleAttrList(String spuId) {
 
@@ -91,6 +94,7 @@ public class SpuServiceImpl implements SpuService {
         return PmsProductSaleAttrs;
     }
 
+    // 获取商品集合图片
     @Override
     public List<PmsProductImage> spuImageList(String spuId) {
 
@@ -102,24 +106,9 @@ public class SpuServiceImpl implements SpuService {
 
     }
 
+    // 获取商品集合销售属性
     @Override
     public List<PmsProductSaleAttr> spuSaleAttrListCheckBySku(String productId,String skuId) {
-
-//        PmsProductSaleAttr pmsProductSaleAttr = new PmsProductSaleAttr();
-//        pmsProductSaleAttr.setProductId(productId);
-//        List<PmsProductSaleAttr> pmsProductSaleAttrs = pmsProductSaleAttrMapper.select(pmsProductSaleAttr);
-//
-//        for (PmsProductSaleAttr productSaleAttr : pmsProductSaleAttrs) {
-//            String saleAttrId = productSaleAttr.getSaleAttrId();
-//
-//            PmsProductSaleAttrValue pmsProductSaleAttrValue = new PmsProductSaleAttrValue();
-//            pmsProductSaleAttrValue.setSaleAttrId(saleAttrId);
-//            pmsProductSaleAttrValue.setProductId(productId);
-//            List<PmsProductSaleAttrValue> pmsProductSaleAttrValues = pmsProductSaleAttrValueMapper.select(pmsProductSaleAttrValue);
-//
-//            productSaleAttr.setSpuSaleAttrValueList(pmsProductSaleAttrValues);
-//
-//        }
 
         List<PmsProductSaleAttr> pmsProductSaleAttrs = pmsProductSaleAttrMapper.selectSpuSaleAttrListCheckBySku(productId,skuId);
         for(PmsProductSaleAttr pmsProductSaleAttr : pmsProductSaleAttrs) {
@@ -130,6 +119,7 @@ public class SpuServiceImpl implements SpuService {
         return pmsProductSaleAttrs;
     }
 
+    // 根据spuId获取商品集合
     @Override
     public List<PmsSkuInfo> SkuSaleAttrValueListBySpu(String spuId) {
         List<PmsSkuInfo> pmsSkuInfos = pmsSkuInfoMapper.selectSkuSaleAttrValueListBySpu(spuId);
@@ -137,6 +127,7 @@ public class SpuServiceImpl implements SpuService {
         return pmsSkuInfos;
     }
 
+    // 删除商品集合
     @Override
     public String deleteSpuInfoById(String spuId) {
 
@@ -144,7 +135,6 @@ public class SpuServiceImpl implements SpuService {
         if(result==0){
             return "fail";
         }
-
         return "success";
     }
 }

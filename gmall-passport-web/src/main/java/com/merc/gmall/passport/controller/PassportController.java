@@ -40,6 +40,7 @@ public class PassportController {
         resp.sendRedirect("http://localhost:8083/index");
     }
 
+    // 微博登录
     @RequestMapping("vlogin")
     public String vlogin(String code, HttpServletRequest request, HttpServletResponse response){
 
@@ -127,7 +128,7 @@ public class PassportController {
         return "redirect:http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
     }
 
-
+    // 校验token信息
     @RequestMapping("verify")
     @ResponseBody
     public String verify(String token,String currentIp,HttpServletRequest request){
@@ -150,6 +151,7 @@ public class PassportController {
     }
 
 
+    // 登录
     @RequestMapping("login")
     @ResponseBody
     public String login(UmsMember umsMember, HttpServletRequest request, HttpServletResponse response) {
@@ -200,6 +202,7 @@ public class PassportController {
         return "index";
     }
 
+    // 返回注册页面
     @RequestMapping("go_register")
     public String go_register(String ReturnUrl, ModelMap map){
 
@@ -207,6 +210,7 @@ public class PassportController {
         return "register";
     }
 
+    // 注册
     @RequestMapping("do_register")
     @ResponseBody
     public Result do_register(String username, String password){
@@ -215,6 +219,7 @@ public class PassportController {
         return result;
     }
 
+    // 注销
     @RequestMapping("logout")
     @ResponseBody
     public void logout(HttpServletRequest request, HttpServletResponse response) {

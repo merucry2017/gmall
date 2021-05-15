@@ -12,13 +12,12 @@ import com.merc.gmall.util.CookieUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -310,6 +309,65 @@ public class CartController {
                 result.setSuccess(true);
             } else {
                 result.setMessage("删除失败！！该条商品不存在");
+            }
+            // 同步缓存
+            cartService.flushCartCache(memberId);
+        }
+        return result;
+    }
+
+    @ApiOperation(value= "更改购物车商品数量",notes = "author:hxq")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productSkuId",value = "商品单元skuId",
+                    required = true,paramType = "java.lang.String"),
+            @ApiImplicitParam(name = "quantity",value = "商品单元数量",
+                    required = true,paramType = "java.lang.String")
+    })
+    @PostMapping("updateQuantityBySkuId")
+    @LoginRequired(loginSuccess = false)
+    @ResponseBody
+    public AjaxResult updateQuantityBySkuId(@RequestParam String productSkuId,@RequestParam String quantity, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+        List<OmsCartItem> omsCartItems = new ArrayList<>();
+        //返回结果
+        AjaxResult result = new AjaxResult();
+        result.setSuccess(false);
+        //获取token
+        String token = request.getParameter("token");
+        BigDecimal skuQuantity = BigDecimal.valueOf(Integer.parseInt(quantity));
+        // 判断用户是否登录
+        String memberId = (String)request.getAttribute("memberId");
+        String nickname = (String)request.getAttribute("nickname");
+
+        if (StringUtils.isBlank(memberId)) {
+            // 用户没有登录
+            // cookie里原有的购物车数据
+            String cartListCookie = CookieUtil.getCookieValue(request, "cartListCookie", true);
+            if (StringUtils.isBlank(cartListCookie)) {
+                // cookie不为空
+                omsCartItems = JSON.parseArray(cartListCookie, OmsCartItem.class);
+                // 删除商品
+                for (OmsCartItem cartItem : omsCartItems) {
+                    String skuId = cartItem.getProductSkuId();
+                    if (skuId.equals(productSkuId)) {
+                        cartItem.setQuantity(skuQuantity);
+                        break;
+                    }
+                }
+            }
+            // 更新cookie
+            CookieUtil.setCookie(request, response, "cartListCookie", JSON.toJSONString(omsCartItems), 60 * 60 * 72, true);
+        } else {
+            // 用户已经登录
+            // 从db中删除购物车数据
+            OmsCartItem omsCartItem = new OmsCartItem();
+            omsCartItem.setQuantity(skuQuantity);
+            omsCartItem.setMemberId(memberId);
+            omsCartItem.setProductSkuId(productSkuId);
+            int state = cartService.updateCartBySkuId(omsCartItem);
+            if(state > 0) {
+                result.setSuccess(true);
+            } else {
+                result.setMessage("修改失败！！该条商品不存在");
             }
             // 同步缓存
             cartService.flushCartCache(memberId);

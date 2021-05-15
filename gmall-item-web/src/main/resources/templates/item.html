@@ -15,7 +15,7 @@
 		<input type = "hidden" th:value="${skuSaleAttrHashJsonStr}" id="valuesSku"/>
 					<div class="min">
 						<ul class="header_ul_left">
-							<li class="glyphicon glyphicon-home"> <a th:onclick="'toIndex(' + ${nickname} + ')'" class="aa">首页</a></li>
+							<li class="glyphicon glyphicon-home"> <a onclick="go_Index()" class="aa">首页</a></li>
 							<li class="glyphicon glyphicon-map-marker"> <a href="javascript:;">北京</a>
 								<ol id="beijing">
 									<li style="background: red;"><a href="javascript:;" style="color: white;">北京</a></li>
@@ -67,9 +67,9 @@
 				<nav>
 				<div class="nav_min">
 					<div class="nav_top">
-						<div class="nav_top_one"><a th:onclick="'toIndex(' + ${nickname} + ')'"><img src="/img/logo1.jpg"/></a></div>
+						<div class="nav_top_one"><a onclick="go_Index()"><img src="/img/logo1.jpg"/></a></div>
 						<div class="nav_top_two"><input type="text"/><button onclick="search()" >搜索</button></div>
-						<div class="nav_top_three"><a href="../JD_Shop/One_JDshop.html">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
+						<div class="nav_top_three"><a onclick="go_my_cart()">我的购物车</a><span class="glyphicon glyphicon-shopping-cart"></span>
 							<div class="nav_top_three_1">
 								<img src="/img/44.png"/>购物车还没有商品，赶紧选购吧！
 							</div>
@@ -288,10 +288,20 @@
 	<script src="/js/js.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		//http://item.gmall.com:8082/43.html?token=eyJhbGciOiJIUzI1Nikfg....
+		var nickname;
 		var token;
 		$(document).ready(function () {
+			nickname = getQueryVariable("nickname");
 			token = getQueryVariable("token");
 		})
+
+		function go_my_cart() {
+			window.location.href="http://cart.gmall.com:8084/cartList?token="+token+"&nickname="+nickname;
+		}
+
+		function go_Index() {
+			window.location.href="http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
+		}
 
 		//加减函数
 		$("#jia").click(function () {
@@ -308,28 +318,12 @@
 			}
 		})
 
-		function toIndex(nickname) {
-			var url = "http://search.gmall.com:8083/index"
-			if(token) {
-				url = url + "?token=" + token;
-				if(nickname) {
-					url = url + "&nickname=" + nickname;
-				}
-			} else {
-				if(nickname) {
-					url = url + "?nickname=" + nickname;
-				}
-			}
-			window.location.href = url;
-		}
-
-		function getQueryVariable(variable)
-		{
+		function getQueryVariable(variable) {
 			var query = window.location.search.substring(1);
 			var vars = query.split("&");
-			for (var i=0;i<vars.length;i++) {
+			for (var i = 0; i < vars.length; i++) {
 				var pair = vars[i].split("=");
-				if(pair[0] == variable){return pair[1];}
+				if(pair[0] == variable){return decodeURIComponent(pair[1]);}
 			}
 			return(false);
 		}
@@ -357,7 +351,7 @@
             var kuSaleAttrValueJson = JSON.parse(skuSaleAttrValueJsonStr);
 			var v_skuId = kuSaleAttrValueJson[k];
 			if(v_skuId){
-                window.location.href = "http://item.gmall.com:8082/"+v_skuId+".html" + "?token=" + token;
+                window.location.href = "http://item.gmall.com:8082/"+v_skuId+".html"+"?token="+token+"&nickname="+nickname;
 			}
 
         }

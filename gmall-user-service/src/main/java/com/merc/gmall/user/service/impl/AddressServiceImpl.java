@@ -24,12 +24,14 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     AddressAreaMapper addressAreaMapper;
 
+    // 获取所有省份
     @Override
     public List<HatProvince> getAllHatProvince() {
         List<HatProvince> hatProvinces = addressProvinceMapper.selectAll();
         return hatProvinces;
     }
 
+    // 根据省份获取城市
     @Override
     public List<HatCity> getAllHatCityByFather(String father) {
         HatCity hatCity = new HatCity();
@@ -38,6 +40,7 @@ public class AddressServiceImpl implements AddressService {
         return hatCities;
     }
 
+    // 根据城市获取市区
     @Override
     public List<HatArea> getAllHatAreaByFather(String father) {
         HatArea hatArea = new HatArea();

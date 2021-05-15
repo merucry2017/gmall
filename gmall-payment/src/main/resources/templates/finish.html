@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8"/>
+    <script src="../../layui/layui.js"></script>
+    <script src="../../js/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../css/JD2.css"/>
+    <link rel="stylesheet" type="text/css" href="../../layui/css/layui.css">
+    <title>订单状态</title>
 </head>
+
 <body>
-      该订单支付完成
+<!--顶部-->
+<header>
+    <div class="header">
+        <ul class="header-left">
+            <li>
+                <img src="../../img/header_1.png"/>
+                <a href="http://search.gmall.com:8083/index">首页</a>
+            </li>
+            <li class="header-l-2">
+                <i class="fa fa-map-marker" style="color: #5C5452;"></i>
+                <a href="">北京</a>
+
+            </li>
+
+        </ul>
+        <ul class="header-right">
+            <li th:text="'你好，'+${nickname}"></li>
+            <li><a style="color: red" href="http://passport.gmall.com:8085/logout" class="li_2">注销</a></li>
+            <li class="spacer"></li>
+            <li><a href="">我的订单</a></li>
+            <li class="spacer"></li>
+
+        </ul>
+        <div style="clear: both;"></div>
+    </div>
+
+
+</header>
+
+<!--主体部分-->
+<div class="section">
+
+    <h1 style="font-size: 20px;margin-top: 10px" th:text="'订单'+${trade_no}+'已经完成支付'"></h1><br/>
+    <button type="button" class="layui-btn"  onclick="toIndex()">返回首页</button>
+    <input id="token" type="hidden" th:value="${token}"/>
+    <input id="nickname" type="hidden" th:value="${nickname}"/>
+</div>
+
 </body>
+<script src="../../jquery/layer/layer.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    // 返回购物车
+    function toIndex() {
+        window.location.href='http://search.gmall.com:8083/index?token='+$("#token").val()+'&nickname='+$("#nickname").val();
+    }
+</script>
 </html>

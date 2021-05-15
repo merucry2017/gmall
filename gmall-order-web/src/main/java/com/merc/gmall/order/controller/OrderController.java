@@ -60,7 +60,7 @@ public class OrderController {
     })
     @PostMapping("submitOrder")
     @LoginRequired(loginSuccess = true)
-    public ModelAndView submitOrder(String receiveAddressId, BigDecimal totalAmount, String tradeCode, HttpServletRequest request, HttpServletResponse response, HttpSession session, ModelMap modelMap) {
+    public ModelAndView submitOrder(String receiveAddressId, BigDecimal totalAmount, String tradeCode, String token, HttpServletRequest request, HttpServletResponse response) {
 
 
         String memberId = (String) request.getAttribute("memberId");
@@ -73,6 +73,7 @@ public class OrderController {
             List<OmsOrderItem> omsOrderItems = new ArrayList<>();
             // 订单对象
             OmsOrder omsOrder = new OmsOrder();
+            // 设置自动确认时间（天）
             omsOrder.setAutoConfirmDay(7);
             omsOrder.setCreateTime(new Date());
             omsOrder.setDiscountAmount(null);
@@ -87,7 +88,8 @@ public class OrderController {
 
             omsOrder.setOrderSn(outTradeNo);//外部订单号
             omsOrder.setPayAmount(totalAmount);
-            omsOrder.setOrderType(1);
+            // 设置支付方式：0->未支付；1->支付宝；2->微信
+            omsOrder.setPayType(0);
             UmsMemberReceiveAddress umsMemberReceiveAddress = userService.getReceiveAddressById(receiveAddressId);
             omsOrder.setReceiverCity(umsMemberReceiveAddress.getCity());
             omsOrder.setReceiverDetailAddress(umsMemberReceiveAddress.getDetailAddress());
@@ -101,8 +103,11 @@ public class OrderController {
             c.add(Calendar.DATE,1);
             Date time = c.getTime();
             omsOrder.setReceiveTime(time);
+            // 设置订单来源：0->PC订单；1->app订单
             omsOrder.setSourceType(0);
+            // 设置订单状态：0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单
             omsOrder.setStatus("0");
+            // 设置订单类型：0->正常订单；1->秒杀订单
             omsOrder.setOrderType(0);
             omsOrder.setTotalAmount(totalAmount);
 
@@ -141,16 +146,20 @@ public class OrderController {
 
             // 将订单和订单详情写入数据库
             // 删除购物车的对应商品
-//            orderService.saveOrder(omsOrder);
-
+            orderService.saveOrder(omsOrder);
 
             // 重定向到支付系统
             ModelAndView mv = new ModelAndView("redirect:http://payment.gmall.com:8087/index");
             mv.addObject("outTradeNo",outTradeNo);
             mv.addObject("totalAmount",totalAmount);
+            mv.addObject("token", token);
+            mv.addObject("nickname", nickname);
             return mv;
         } else {
             ModelAndView mv = new ModelAndView("tradeFail");
+            mv.addObject("token", token);
+            mv.addObject("nickName", nickname);
+            mv.addObject("errMsg", "交易时间过长，交易码失效");
             return mv;
         }
 
@@ -180,13 +189,11 @@ public class OrderController {
                 OmsOrderItem omsOrderItem = new OmsOrderItem();
                 omsOrderItem.setProductName(omsCartItem.getProductName());
                 omsOrderItem.setProductPic(omsCartItem.getProductPic());
+                omsOrderItem.setProductQuantity(omsCartItem.getQuantity());
+                omsOrderItem.setProductPrice(omsCartItem.getPrice());
                 omsOrderItems.add(omsOrderItem);
             }
         }
-
-//        modelMap.put("omsOrderItems", omsOrderItems);
-//        modelMap.put("userAddressList", umsMemberReceiveAddresses);
-//        modelMap.put("totalAmount", getTotalAmount(omsCartItems));
 
         model.addObject("omsOrderItems", omsOrderItems);
         model.addObject("userAddressList", umsMemberReceiveAddresses);
@@ -219,9 +226,31 @@ public class OrderController {
     @ApiOperation(value = "返回用户订单页面",notes = "author:hxq")
     @ApiImplicitParam
     @GetMapping("one_order.html")
-    public ModelAndView getOneOrder(){
+    @LoginRequired(loginSuccess = true)
+    public ModelAndView getOneOrder(HttpServletRequest request){
+        String memberId = (String) request.getAttribute("memberId");
+        List<OmsOrder> omsOrders = orderService.getOrderByMemberId(memberId);
+        List<OmsOrderInfo> omsOrderInfos = new ArrayList<>(omsOrders.size());
+        OmsOrderInfo omsOrderInfo;
+        for(OmsOrder omsOrder: omsOrders) {
+            omsOrderInfo = new OmsOrderInfo();
+            omsOrderInfo.setCreateTime(omsOrder.getCreateTime());
+            omsOrderInfo.setOrderSn(omsOrder.getOrderSn());
+            List<OmsOrderItem> orderItems = orderService.getOrderItemByOrderSn(omsOrder.getOrderSn());
+            omsOrderInfo.setOrderItems(orderItems);
+            omsOrderInfo.setMemberUsername(omsOrder.getMemberUsername());
+            omsOrderInfo.setTotalAmount(omsOrder.getTotalAmount());
+            int payType = omsOrder.getPayType();
+            if(payType == 0) {
+                omsOrderInfo.setPayTypeValue("未支付");
+            } else {
+                omsOrderInfo.setPayTypeValue("支付宝");
+            }
+            omsOrderInfos.add(omsOrderInfo);
+        }
         ModelAndView model = new ModelAndView();
         model.setViewName("one_order");
+        model.addObject("omsOrderInfos", omsOrderInfos);
         return model;
     }
 

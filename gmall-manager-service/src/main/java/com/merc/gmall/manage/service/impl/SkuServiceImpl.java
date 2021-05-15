@@ -41,6 +41,7 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     RedisUtil redisUtil;
 
+    // 保存库存商品信息
     @Override
     public void saveSkuInfo(PmsSkuInfo pmsSkuInfo) {
 
@@ -75,7 +76,7 @@ public class SkuServiceImpl implements SkuService {
 
     }
 
-
+    // 从数据库中获取库存商品
     public PmsSkuInfo getSkuByIdFromDb(String skuId){
         // sku商品对象
         PmsSkuInfo pmsSkuInfo = new PmsSkuInfo();
@@ -93,7 +94,7 @@ public class SkuServiceImpl implements SkuService {
         return skuInfo;
     }
 
-
+    // 从Rdis中获取库存商品
     @Override
     public PmsSkuInfo getSkuById(String skuId,String ip) {
         System.out.println("ip为"+ip+"的同学:"+Thread.currentThread().getName()+"进入的商品详情的请求");
@@ -150,6 +151,7 @@ public class SkuServiceImpl implements SkuService {
         return pmsSkuInfo;
     }
 
+    // 通过productId获取库存商品集合
     @Override
     public List<PmsSkuInfo> getSkuSaleAttrValueListBySpu(String productId) {
 
@@ -158,6 +160,7 @@ public class SkuServiceImpl implements SkuService {
         return pmsSkuInfos;
     }
 
+    // 获取所有库存商品
     @Override
     public List<PmsSkuInfo> getAllSku() {
         List<PmsSkuInfo> pmsSkuInfos = pmsSkuInfoMapper.selectAll();
@@ -174,6 +177,7 @@ public class SkuServiceImpl implements SkuService {
         return pmsSkuInfos;
     }
 
+    // 从数据库计算订单价格
     @Override
     public boolean checkPrice(String productSkuId, BigDecimal productPrice) {
 
@@ -191,11 +195,10 @@ public class SkuServiceImpl implements SkuService {
         if(price.compareTo(productPrice)==0){
             b = true;
         }
-
-
         return b;
     }
 
+    // 根据spuId删除库存集合
     @Override
     public String deleteBatchSkuBySpuId(String spuId) {
         int result = pmsSkuInfoMapper.deleteBatchSkuBySpuId(spuId);;

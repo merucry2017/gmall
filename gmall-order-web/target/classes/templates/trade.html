@@ -93,7 +93,14 @@
 				<div class="yun1" th:each="omsOrderItem:${omsOrderItems}"  >
 					<img  class="yun" th:src="${omsOrderItem.productPic}"/>
 					<div class="mi">
-						<div><p style="width: 500px;" th:text="${omsOrderItem.productName}" >商品名称111111111111 </p> <span style="float: right"> <span align="center" style="color: red" >   </span> <span   th:text="'X '+${omsOrderItem.productName}"> X 1   </span> <span  >有货</span>  <span  >无货</span>  </span> </div>
+						<div>
+							<p style="width: 500px;" th:text="${omsOrderItem.productName}" >商品名称111111111111 </p>
+							<span style="float: right">
+								<span align="center" style="color: red" th:text="'￥ '+${omsOrderItem.productPrice}"></span>
+								<span   th:text="'X '+${omsOrderItem.productQuantity}"> X 1</span>
+								<span  >有货</span>
+							</span>
+						</div>
 
 					</div>
 				</div>
@@ -127,6 +134,7 @@
 			<input id="totalAmount" name="totalAmount" th:value="${totalAmount}" type="hidden"/>
 
 			<input name="tradeCode" th:value="${tradeCode}"  type="hidden"  />
+			<input name="token" type="hidden" id="token"/>
 		</form>
 
 		<script type="text/javascript">
@@ -134,6 +142,7 @@
 			var token;
 			$(document).ready(function () {
 				token = getQueryVariable("token");
+				$("#token").attr("value", token);
 			})
 
 			layui.use(['form', 'layedit', 'laydate'], function(){
@@ -281,11 +290,16 @@
             $(function() {
 
                 $("#submitButton").click(function () {
-                   $("#consignee").val($("input[type='radio']:checked").next().text()) ;
-                   $("#deliveryAddress").val( $("input[type='radio']:checked").next().next().text());
-                   $("#paymentWay").val("ONLINE");
-                   $("#orderComment").val($("#orderCommentPage").val());
-                   $("#orderForm").submit();
+                	var receiveAddressId = $("input[name='deliveryAddress']:checked").val();
+                	if(receiveAddressId == undefined) {
+						layer.msg("请选择地址！", {time: 3000, icon: 6, shift: 6});
+						return false;
+					}
+				   $("#consignee").val($("input[type='radio']:checked").next().text()) ;
+				   $("#deliveryAddress").val( $("input[type='radio']:checked").next().next().text());
+				   $("#paymentWay").val("ONLINE");
+				   $("#orderComment").val($("#orderCommentPage").val());
+				   $("#orderForm").submit();
 
                 });
 

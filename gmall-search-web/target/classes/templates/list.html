@@ -16,7 +16,7 @@
     <div class="header_head_box">
         <b class="header_head_p">
             <div style="overflow: hidden">
-                <a href="#" class="header_head_p_a1">
+                <a onclick="go_Index()" class="header_head_p_a1">
                     首页
                 </a>
             </div>
@@ -33,7 +33,7 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a href="#"><img src="/list/image/logo2018.gif" alt="" width="180px" height="70px"></a>
+        <a onclick="go_Index()"><img src="/list/image/logo2018.gif" alt="" width="180px" height="70px"></a>
     </div>
     <div class="header_form">
         <input id="keyword" name="keyword" type="text" placeholder="手机" />
@@ -41,7 +41,7 @@
     </div>
     <div class="header_ico">
         <div class="header_gw">
-            <span><a href="#">我的购物车</a></span>
+            <span><a onclick="go_my_cart()">我的购物车</a></span>
             <img src="/list/image/settleup-@1x.png" />
             <span>0</span>
         </div>
@@ -295,32 +295,40 @@
 <script src="/list/js/index.js"></script>
 <script language="JavaScript">
     //http://search.gmall.com:8083/index?token=eyJhbGciOJ9....&username=wangwu#
+    var nickname;
     var token;
     $(document).ready(function () {
+        nickname = getQueryVariable("nickname");
         token = getQueryVariable("token");
+        if(nickname){
+            document.getElementById("nickname").value = "您好, " + nickname;
+        } else {
+            document.getElementById("nickname").value = "您好，请登录！";
+        }
     })
 
-    function getQueryVariable(variable)
-    {
+    function getQueryVariable(variable) {
         var query = window.location.search.substring(1);
         var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
+        for (var i = 0; i < vars.length; i++) {
             var pair = vars[i].split("=");
-            if(pair[0] == variable){return pair[1];}
+            if(pair[0] == variable){return decodeURIComponent(pair[1]);}
         }
         return(false);
     }
 
     function item(skuid) {
-        window.location.href="http://item.gmall.com:8082/" + skuid + ".html" + "?token=" + token;
+        window.location.href="http://item.gmall.com:8082/"+skuid+ ".html"+"?token="+token+"&nickname="+nickname;
     }
 
     function searchList(){
         var keyword = $("#keyword").val();
-        window.location.href="/list.html?token=" + token + "&keyword="+keyword;
+        window.location.href="/list.html?token="+token+"&keyword="+keyword+"&nickname="+nickname;
     }
 
-
+    function go_Index() {
+        window.location.href="http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
+    }
 
     $(".sl_ext a:nth-child(1)").hover(function(){
         $(this).children("b").stop(true).animate({top:"3px"},50);

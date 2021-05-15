@@ -25,6 +25,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     OmsCartItemMapper omsCartItemMapper;
 
+    // 通过用户信息获取购物车
     @Override
     public OmsCartItem ifCartExistByUser(String memberId, String skuId) {
 
@@ -36,6 +37,7 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    // 新增购物车商品
     @Override
     public void addCart(OmsCartItem omsCartItem) {
         System.out.println(omsCartItem.getQuantity());
@@ -44,6 +46,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    // 更新数据库中的购物车信息
     @Override
     public void updateCart(OmsCartItem omsCartItemFromDb) {
 
@@ -54,6 +57,7 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    // 刷新缓存中的购物车
     @Override
     public void flushCartCache(String memberId) {
 
@@ -77,6 +81,7 @@ public class CartServiceImpl implements CartService {
         jedis.close();
     }
 
+    // 获取购物车信息
     @Override
     public List<OmsCartItem> cartList(String userId) {
         Jedis jedis = null;
@@ -104,6 +109,7 @@ public class CartServiceImpl implements CartService {
         return omsCartItems;
     }
 
+    // 根据memberId获取购物车
     @Override
     public void checkCart(OmsCartItem omsCartItem) {
 
@@ -118,6 +124,7 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    // 根据memberId获取购物车
     @Override
     public void allCheckCart(OmsCartItem omsCartItem) {
         Example e = new Example(OmsCartItem.class);
@@ -130,12 +137,24 @@ public class CartServiceImpl implements CartService {
         flushCartCache(omsCartItem.getMemberId());
     }
 
+    // 删除购物车
     @Override
-    public int deleteCartByUser(String memberId, String skuId) {
+    public Integer deleteCartByUser(String memberId, String skuId) {
         OmsCartItem omsCartItem = new OmsCartItem();
         omsCartItem.setMemberId(memberId);
         omsCartItem.setProductSkuId(skuId);
-        int result = omsCartItemMapper.deleteBySkuIdAndMemberId(memberId, skuId);
+        Integer result = omsCartItemMapper.deleteBySkuIdAndMemberId(memberId, skuId);
         return result;
+    }
+
+    // 更新购物车中的商品数量
+    @Override
+    public Integer updateCartBySkuId(OmsCartItem omsCartItem) {
+        Example example = new Example(OmsCartItem.class);
+        example.createCriteria().andEqualTo("productSkuId", omsCartItem.getProductSkuId());
+        example.createCriteria().andEqualTo("memberId", omsCartItem.getMemberId());
+        example.createCriteria().andEqualTo("quantity", omsCartItem.getQuantity());
+        Integer state = omsCartItemMapper.updateByExampleSelective(omsCartItem, example);
+        return state;
     }
 }

@@ -19,5 +19,8 @@ public interface CartService {
 
     void allCheckCart(OmsCartItem omsCartItem);
 
-    int deleteCartByUser(String memberId, String skuId);
+    Integer deleteCartByUser(String memberId, String skuId);
+
+    Integer updateCartBySkuId(OmsCartItem omsCartItem);
+
 }

@@ -18,6 +18,8 @@ public interface UserService {
 
     void deleteUserToken(String memberId);
 
+    String getUserToken(String memberId);
+
     UmsMember addOauthUser(UmsMember umsMember);
 
     UmsMember checkOauthUser(UmsMember umsCheck);

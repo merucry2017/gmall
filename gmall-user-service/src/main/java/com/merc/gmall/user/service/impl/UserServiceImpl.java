@@ -29,12 +29,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RedisUtil redisUtil;
 
+    // 获取所有用户
     @Override
     public List<UmsMember> getAllUser() {
         List<UmsMember> umsMembers = userMapper.selectAll();
         return umsMembers;
     }
 
+    // 通过memberId获取用户收获地址
     @Override
     public List<UmsMemberReceiveAddress> getReceiveAddressByMemberId(String memberId) {
         // 封装的参数对象
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
         return umsMemberReceiveAddresses;
     }
 
+    // 实现用户登录
     @Override
     public UmsMember login(UmsMember umsMember) {
         //若密码为空，返回Null
@@ -75,6 +78,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // 将生成的Token存储到Redis数据库中
     @Override
     public void addUserToken(String token, String memberId) {
         Jedis jedis = redisUtil.getJedis();
@@ -83,6 +87,16 @@ public class UserServiceImpl implements UserService {
         jedis.close();
     }
 
+    // 从Redis中获取Token
+    @Override
+    public String getUserToken(String memberId) {
+        Jedis jedis = redisUtil.getJedis();
+        String token = jedis.get("user:"+memberId+":token");
+        jedis.close();
+        return token;
+    }
+
+    // 根据memberId删除Token
     @Override
     public void deleteUserToken(String memberId) {
         Jedis jedis = redisUtil.getJedis();
@@ -90,6 +104,7 @@ public class UserServiceImpl implements UserService {
         jedis.close();
     }
 
+    // 添加认证用户
     @Override
     public UmsMember addOauthUser(UmsMember umsMember) {
         userMapper.insertSelective(umsMember);
@@ -97,20 +112,22 @@ public class UserServiceImpl implements UserService {
         return umsMember;
     }
 
+    // 检查认证用户
     @Override
     public UmsMember checkOauthUser(UmsMember umsCheck) {
         UmsMember umsMember = userMapper.selectOne(umsCheck);
         return umsMember;
     }
 
+    // 获取认证用户
     @Override
     public UmsMember getOauthUser(UmsMember umsMemberCheck) {
-
 
         UmsMember umsMember = userMapper.selectOne(umsMemberCheck);
         return umsMember;
     }
 
+    // 通过addressId获取地址
     @Override
     public UmsMemberReceiveAddress getReceiveAddressById(String receiveAddressId) {
         UmsMemberReceiveAddress umsMemberReceiveAddress = new UmsMemberReceiveAddress();
@@ -119,6 +136,7 @@ public class UserServiceImpl implements UserService {
         return umsMemberReceiveAddress1;
     }
 
+    // 保存用户信息
     @Override
     public Result saveUser(UmsMember user) {
         String username = user.getUsername();
@@ -142,11 +160,11 @@ public class UserServiceImpl implements UserService {
             }
         }else {
             result.setMessage("用户已存在");
-//            throw new RuntimeException("用户已存在");
         }
         return result;
     }
 
+    // 保存用户收获地址
     @Override
     public Result saveUmsMemberReceiveAddress(UmsMemberReceiveAddress umsMemberReceiveAddress) {
         Result result = new Result();
@@ -164,6 +182,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    // 根据收货地址Id删除收货地址
     @Override
     public Result deleteUmsMemberReceiveAddressById(String id) {
         Result result = new Result();
@@ -182,6 +201,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    // 根据收货地址Id修改收货地址
     @Override
     public Result modifyUmsMemberReceiveAddressById(UmsMemberReceiveAddress umsMemberReceiveAddress) {
         Result result = new Result();
@@ -196,6 +216,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    // 根据收货地址Id获取收货地址
     @Override
     public UmsMemberReceiveAddress getUmsMemberReceiveAddressById(String id) {
         if(id == null || id.equals("")) {
@@ -207,6 +228,7 @@ public class UserServiceImpl implements UserService {
         return umsMemberReceiveAddress;
     }
 
+    // 从数据库中登录
     private UmsMember loginFromDb(UmsMember umsMember) {
         UmsMember member = userMapper.findByUsername(umsMember.getUsername());
         if(member == null) {
@@ -218,6 +240,5 @@ public class UserServiceImpl implements UserService {
         }
         return member;
     }
-
 
 }

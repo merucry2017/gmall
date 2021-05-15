@@ -28,6 +28,7 @@ public class AttrServiceImpl implements AttrService {
     PmsBaseSaleAttrMapper pmsBaseSaleAttrMapper;
 
 
+    // 通过属性三级目录获取详情信息
     @Override
     public List<PmsBaseAttrInfo> attrInfoList(String catalog3Id) {
 
@@ -46,16 +47,15 @@ public class AttrServiceImpl implements AttrService {
         return pmsBaseAttrInfos;
     }
 
+    // 保存商品属性信息
     @Override
     public String saveAttrInfo(PmsBaseAttrInfo pmsBaseAttrInfo) {
-
         String id = pmsBaseAttrInfo.getId();
         if(StringUtils.isBlank(id)){
             // id为空，保存
             // 保存属性
             //insert insertSelective 是否将null插入数据库
             pmsBaseAttrInfoMapper.insertSelective(pmsBaseAttrInfo);
-
             // 保存属性值
             List<PmsBaseAttrValue> attrValueList = pmsBaseAttrInfo.getAttrValueList();
             if(attrValueList!=null&&attrValueList.size()>0){
@@ -67,12 +67,10 @@ public class AttrServiceImpl implements AttrService {
             }
         }else{
             // id不空，修改
-
             // 属性修改
             Example example = new Example(PmsBaseAttrInfo.class);
             example.createCriteria().andEqualTo("id",pmsBaseAttrInfo.getId());
             pmsBaseAttrInfoMapper.updateByExampleSelective(pmsBaseAttrInfo,example);
-
 
             // 属性值修改
             // 按照属性id删除所有属性值
@@ -87,11 +85,10 @@ public class AttrServiceImpl implements AttrService {
             }
 
         }
-
-
         return "success";
     }
 
+    // 根据属性Id获取属性值列表
     @Override
     public List<PmsBaseAttrValue> getAttrValueList(String attrId) {
 
@@ -101,11 +98,13 @@ public class AttrServiceImpl implements AttrService {
         return pmsBaseAttrValues;
     }
 
+    // 获取商品属性一级目录列表
     @Override
     public List<PmsBaseSaleAttr> baseSaleAttrList() {
         return pmsBaseSaleAttrMapper.selectAll();
     }
 
+    // 通过属性值Id获取属性值列表
     @Override
     public List<PmsBaseAttrInfo> getAttrValueListByValueId(Set<String> valueIdSet) {
 
@@ -114,6 +113,7 @@ public class AttrServiceImpl implements AttrService {
         return pmsBaseAttrInfos;
     }
 
+    // 通过属性值Id删除属性
     @Override
     public String deleteAttrInfoById(String attrId) {
         int result = pmsBaseAttrInfoMapper.deleteByPrimaryKey(attrId);
@@ -123,6 +123,7 @@ public class AttrServiceImpl implements AttrService {
         return "success";
     }
 
+    // 通过属性值Id删除属性值
     @Override
     public String deleteAttrValueById(String attrId) {
         int result = pmsBaseAttrValueMapper.deleteByPrimaryKey(attrId);
@@ -131,6 +132,4 @@ public class AttrServiceImpl implements AttrService {
         }
         return "success";
     }
-
-
 }

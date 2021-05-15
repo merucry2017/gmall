@@ -257,32 +257,36 @@ $(".One_ShopCon ul li>div:nth-child(2) ol>li:nth-child(4) p:first-child span").m
     $(this).css("cursor","pointer")
 })
 //+
-$(".One_ShopCon ul li>div:nth-child(2) ol>li:nth-child(4) p:first-child span:last-child").click(function(){
+$(".One_ShopCon ul li>div:nth-child(2) ol>li:nth-child(4) p:first-child span:nth-child(4)").click(function(){
     var add=$(this).prev("span").html();
     console.log($(this));
     add++;
+    $("#quantity").attr("value", add);
     $(this).prev("span").html(add);
     //总价
     var dj=$(this).parent().parent().prev().children(".dj").html().substring(1);
     var sl=$(this).prev("span").html();
     $(this).parent().parent().parent().children("li:nth-child(5)").children(".zj").html("￥"+dj*sl+".00")
     sumSumPrice();
-
+    var productSkuId = $(this).next("input").val();
+    changeQuantity(productSkuId, add);
 })
 //-
-$(".One_ShopCon ul li>div:nth-child(2) ol>li:nth-child(4) p:first-child span:first-child").click(function(){
+$(".One_ShopCon ul li>div:nth-child(2) ol>li:nth-child(4) p:first-child span:nth-child(2)").click(function(){
     var jian=$(this).next("span").html();
     jian--;
     if(jian<=0){
         jian=0;
     }
+    $("#quantity").attr("value", jian);
     $(this).next("span").html(jian);
     //总价
     var dj=$(this).parent().parent().prev().children(".dj").html().substring(1);
     var sl=$(this).next("span").html();
     $(this).parent().parent().parent().children("li:nth-child(5)").children(".zj").html("￥"+dj*sl+".00")
     sumSumPrice();
-
+    var productSkuId = $(this).prev("input").val();
+    changeQuantity(productSkuId, jian);
 })
 //选中当前商品背景变色
 $(".check").each(function(index){

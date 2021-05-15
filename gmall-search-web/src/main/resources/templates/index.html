@@ -121,7 +121,7 @@
       <div class="header_ico">
         <div class="header_gw">
           <img src="/index/img/img_15.png" />
-          <span><a href="http://cart.gmall.com:8084/One_JDshop.html">我的购物车</a></span>
+          <span><a onclick="go_my_cart()">我的购物车</a></span>
           <span>0</span>
         </div>
         <div class="header_ko">
@@ -676,8 +676,7 @@
       }
   })
 
-  function getQueryVariable(variable)
-  {
+  function getQueryVariable(variable) {
     var query = window.location.search.substring(1);
     var vars = query.split("&");
     for (var i = 0; i < vars.length; i++) {
@@ -689,11 +688,15 @@
 
   function search() {
       var keyword=$("#searchText").val()
-      window.location.href="http://search.gmall.com:8083/list.html?token=" + token + "&keyword=" + keyword;
+      window.location.href="http://search.gmall.com:8083/list.html?token="+token+"&keyword="+keyword+"&nickname="+nickname;
   }
 
   function go_one_order() {
-      window.location.href="http://order.gmall.com:8086/one_order.html?token=" + token + "&username=" + nickname;
+      window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+  }
+
+  function go_my_cart() {
+      window.location.href="http://cart.gmall.com:8084/cartList?token="+token+"&nickname="+nickname;
   }
 
 </script>

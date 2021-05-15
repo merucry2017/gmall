@@ -29,6 +29,7 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     JestClient jestClient;
 
+    // 使用elasticSearch搜索商品
     @Override
     public List<PmsSearchSkuInfo> list(PmsSearchParam pmsSearchParam) {
         String dslStr = getSearchDsl(pmsSearchParam);

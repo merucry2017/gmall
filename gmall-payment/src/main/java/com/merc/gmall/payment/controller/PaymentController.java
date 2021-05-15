@@ -6,12 +6,14 @@ import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.merc.gmall.annotations.LoginRequired;
 import com.merc.gmall.bean.OmsOrder;
 import com.merc.gmall.bean.PaymentInfo;
 import com.merc.gmall.payment.config.AlipayConfig;
 import com.merc.gmall.service.OrderService;
 import com.merc.gmall.service.PaymentService;
+import com.merc.gmall.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,9 @@ public class PaymentController {
 
     @Reference
     OrderService orderService;
+
+    @Reference
+    UserService userService;
 
     @RequestMapping("alipay/callback/return")
     @LoginRequired(loginSuccess = true)
@@ -66,7 +71,12 @@ public class PaymentController {
             paymentService.updatePayment(paymentInfo);
 
         }
-
+        String nickname = (String) request.getAttribute("nickname");
+        String memberId = (String) request.getAttribute("memberId");
+        String token = userService.getUserToken(memberId);
+        modelMap.addAttribute("nickname", nickname);
+        modelMap.addAttribute("token", token);
+        modelMap.addAttribute("trade_no", out_trade_no);
         return "finish";
     }
 
@@ -79,8 +89,8 @@ public class PaymentController {
 
         // 获得一个支付宝请求的客户端(它并不是一个链接，而是一个封装好的http的表单请求)
         String form = null;
-        AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();//创建API对应的request
-
+        //创建API对应的request
+        AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
         // 回调函数
         alipayRequest.setReturnUrl(AlipayConfig.return_payment_url);
         alipayRequest.setNotifyUrl(AlipayConfig.notify_payment_url);
@@ -88,16 +98,16 @@ public class PaymentController {
         Map<String,Object> map = new HashMap<>();
         map.put("out_trade_no",outTradeNo);
         map.put("product_code","FAST_INSTANT_TRADE_PAY");
-        map.put("total_amount",0.01);
-        map.put("subject","尚硅谷感光徕卡Pro300瞎命名系列手机");
+        map.put("total_amount", totalAmount);
+        map.put("subject","谷粒订单");
 
         String param = JSON.toJSONString(map);
 
         alipayRequest.setBizContent(param);
 
         try {
-            form = alipayClient.pageExecute(alipayRequest).getBody(); //调用SDK生成表单
-            System.out.println(form);
+            //调用SDK生成表单
+            form = alipayClient.pageExecute(alipayRequest).getBody();
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
@@ -107,10 +117,9 @@ public class PaymentController {
         PaymentInfo paymentInfo = new PaymentInfo();
         paymentInfo.setCreateTime(new Date());
         paymentInfo.setOrderId(omsOrder.getId());
-//        paymentInfo.setOrderId("1");
         paymentInfo.setOrderSn(outTradeNo);
         paymentInfo.setPaymentStatus("未付款");
-        paymentInfo.setSubject("谷粒商城商品一件");
+        paymentInfo.setSubject("谷粒订单");
         paymentInfo.setTotalAmount(totalAmount);
         paymentService.savePaymentInfo(paymentInfo);
 
