@@ -14,8 +14,8 @@
         <img alt="" src="img\logo1.jpg">
         <ul>
           <li><span th:text="'你好,'+ ${nickname}"></span></li>
-            <li><span>退出</span></li>
-          <li>我的订单</li>
+            <li><span onclick="history.back(-1)">退出</span></li>
+          <li><a onclick="go_one_order()">我的订单</a></li>
           <li>支付帮助</li>
         </ul>
       </div>
@@ -75,8 +75,10 @@
 	</body>
   <script type="text/javascript">
       var token;
+      var nickname;
       $(document).ready(function () {
         token = getQueryVariable("token");
+        nickname = getQueryVariable("nickname");
         $("#token").attr("value", token);
       })
 
@@ -90,6 +92,9 @@
         return(false);
       }
 
+      function go_one_order() {
+        window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+      }
 
       $("#paymentButton").click(function () {
         $("#paymentForm").attr("action","/"+$("input[type='radio']:checked").val()+"/submit")  ;

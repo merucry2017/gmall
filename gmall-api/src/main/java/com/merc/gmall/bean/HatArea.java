@@ -3,7 +3,7 @@ package com.merc.gmall.bean;
 import java.io.Serializable;
 
 public class HatArea  implements Serializable {
-    private int id;
+    private Integer id;
     private String areaId;
     private String area;
     private String father;
@@ -18,11 +18,11 @@ public class HatArea  implements Serializable {
                 '}';
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

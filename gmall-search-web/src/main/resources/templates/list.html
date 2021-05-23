@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/list/css/index.css">
     <link rel="stylesheet" type="text/css" href="/list/font/iconfont.css">
     <script src="/list/js/jquery-1.12.4.js"></script>
-    <title>谷粒商城</title>
+    <title>谷米商城</title>
 </head>
 <body>
 <!--头部-->
@@ -26,6 +26,9 @@
             <li>
                 <a href="http://passport.gmall.com:8085/logout" class="li_2">注销</a>
             </li>
+            <li>
+                <a onclick="go_one_order()">我的订单</a>
+            </li>
         </ul>
     </div>
 </div>
@@ -33,7 +36,7 @@
 <!--搜索导航-->
 <div class="header_sous">
     <div class="logo">
-        <a onclick="go_Index()"><img src="/list/image/logo2018.gif" alt="" width="180px" height="70px"></a>
+        <a onclick="go_Index()"><img src="/list/image/logo1.jpg" alt="" width="180px" height="70px"></a>
     </div>
     <div class="header_form">
         <input id="keyword" name="keyword" type="text" placeholder="手机" />
@@ -328,6 +331,10 @@
 
     function go_Index() {
         window.location.href="http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
+    }
+
+    function go_one_order() {
+        window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
     }
 
     $(".sl_ext a:nth-child(1)").hover(function(){

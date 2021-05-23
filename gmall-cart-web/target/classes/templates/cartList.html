@@ -28,7 +28,7 @@
                 <li><a href="../登录页面\index.html" style="color: red;" th:if="${nickname}!=null" th:text="'您好,' + ${nickname}">你好，请登录</a></li>
                 <li><a style="color: red" href="http://passport.gmall.com:8085/logout" class="li_2">注销</a></li>
                 <li class="spacer"></li>
-                <li><a href="">我的订单</a></li>
+                <li><a onclick="go_one_order()">我的订单</a></li>
                 <li class="spacer"></li>
 
             </ul>
@@ -169,7 +169,7 @@
     }
 
     function deleteFromCart(skuId) {
-        let url = 'http://cart.gmall.com:8084/deleteFromCart?skuId='+skuId+'&token='+token;
+        let url = 'http://cart.gmall.com:8084/deleteFromCart?skuId='+skuId+'&token='+token+"&nickname="+nickname;
         var loadingIndex = -1;
         $.ajax({
             url:url,
@@ -197,20 +197,20 @@
     function toTrade(){
         // var cartList = document.getElementsByName("productSkuId");
         // console.log(cartList);
-        window.location.href="http://order.gmall.com:8086/toTrade?token="+token;
+        window.location.href="http://order.gmall.com:8086/toTrade?token="+token+"&nickname="+nickname;
     }
     function toItem(skuId) {
-        window.location.href="http://item.gmall.com:8082/"+skuId+".html?token="+token;
+        window.location.href="http://item.gmall.com:8082/"+skuId+".html?token="+token+"&nickname="+nickname;
     }
 
     function login(){
       var s = encodeURIComponent("http://cart.gmall.com:8084/cartList");
-       window.location.href="http://passport.atguigu.com/index?originUrl="+s+"&token="+token;
+       window.location.href="http://passport.atguigu.com/index?originUrl="+s+"&token="+token+"&nickname="+nickname;
     }
 
     function search() {
         var keyword=$("#searchText").val()
-        window.location.href="http://search.gmall.com:8083/list.html?keyword="+keyword+"&token="+token;
+        window.location.href="http://search.gmall.com:8083/list.html?keyword="+keyword+"&token="+token+"&nickname="+nickname;
     }
 
     function checkSku( chkbox){
@@ -268,6 +268,9 @@
         window.location.href="http://search.gmall.com:8083/index?token="+token+"&nickname="+nickname;
     }
 
+    function go_one_order() {
+        window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+    }
 </script>
 </html>
 

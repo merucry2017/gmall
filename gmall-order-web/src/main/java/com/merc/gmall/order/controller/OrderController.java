@@ -52,11 +52,11 @@ public class OrderController {
     @ApiOperation(value = "提交订单", notes = "author:hxq")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "receiveAddressId",value = "收货地址",
-                required = true,paramType = "java.lang.String"),
+                    required = true,paramType = "java.lang.String"),
             @ApiImplicitParam(name = "totalAmount",value = "总金额",
-                required = true,paramType = "java.math.BigDecimal"),
+                    required = true,paramType = "java.math.BigDecimal"),
             @ApiImplicitParam(name = "tradeCode",value = "交易码",
-                required = true,paramType = "java.lang.String")
+                    required = true,paramType = "java.lang.String")
     })
     @PostMapping("submitOrder")
     @LoginRequired(loginSuccess = true)
@@ -194,7 +194,7 @@ public class OrderController {
                 omsOrderItems.add(omsOrderItem);
             }
         }
-
+        // 将数据放到model中，再从前端页面获取此处的数据
         model.addObject("omsOrderItems", omsOrderItems);
         model.addObject("userAddressList", umsMemberReceiveAddresses);
         model.addObject("totalAmount", getTotalAmount(omsCartItems));
@@ -234,6 +234,7 @@ public class OrderController {
         OmsOrderInfo omsOrderInfo;
         for(OmsOrder omsOrder: omsOrders) {
             omsOrderInfo = new OmsOrderInfo();
+            omsOrderInfo.setId(omsOrder.getId());
             omsOrderInfo.setCreateTime(omsOrder.getCreateTime());
             omsOrderInfo.setOrderSn(omsOrder.getOrderSn());
             List<OmsOrderItem> orderItems = orderService.getOrderItemByOrderSn(omsOrder.getOrderSn());
@@ -245,6 +246,12 @@ public class OrderController {
                 omsOrderInfo.setPayTypeValue("未支付");
             } else {
                 omsOrderInfo.setPayTypeValue("支付宝");
+            }
+            String status = omsOrder.getStatus();
+            if(status.equals("0")) {
+                omsOrderInfo.setStatusValue("待付款");
+            } else {
+                omsOrderInfo.setStatusValue("待发货");
             }
             omsOrderInfos.add(omsOrderInfo);
         }
@@ -335,6 +342,23 @@ public class OrderController {
     public UmsMemberReceiveAddress getAddressById(@RequestParam String id, HttpServletRequest request) {
         UmsMemberReceiveAddress umsMemberReceiveAddress = userService.getUmsMemberReceiveAddressById(id);
         return umsMemberReceiveAddress;
+    }
+
+    @ApiOperation(value = "根据orderSn删除订单", notes = "author:hxq")
+    @ApiImplicitParam
+    @DeleteMapping("deleteOrderById")
+    @LoginRequired(loginSuccess = true)
+    public Result deleteOrderById(@RequestParam String orderId, HttpServletRequest request) {
+        Result result = new Result();
+        result.setSuccess(true);
+        try {
+            orderService.deleteOrderById(orderId);
+        }catch (Exception e) {
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+            return result;
+        }
+        return result;
     }
 }
 

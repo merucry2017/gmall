@@ -59,7 +59,7 @@
 						<ul class="header_ul_right">
 							<li style="border: 0;"><a href="#" class="aa" th:if="${nickname}!=null" th:text="'您好, ' + ${nickname}">你好，请登录</a></li>
 							<li><a style="color: red" href="http://passport.gmall.com:8085/logout" class="li_2">注销</a> |</li>
-							<li><a href="javascript:;" class="aa">我的订单</a> |</li>
+							<li><a onclick="go_one_order()" class="aa">我的订单</a> |</li>
  
 						</ul>
 					</div>
@@ -355,6 +355,10 @@
 			}
 
         }
+
+		function go_one_order() {
+			window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+		}
 	</script>
 
 </html>

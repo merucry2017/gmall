@@ -23,4 +23,8 @@ public interface OrderService {
     List<OmsOrder> getOrderByMemberId(String memberId);
 
     List<OmsOrderItem> getOrderItemByOrderSn(String orderSn);
+
+    void updateOrderPayType(String orderSn, Integer payType);
+
+    void deleteOrderById(String Id);
 }

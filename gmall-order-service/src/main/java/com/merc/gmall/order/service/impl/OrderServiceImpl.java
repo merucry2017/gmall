@@ -206,4 +206,26 @@ public class OrderServiceImpl implements OrderService {
 
         return omsOrderItems;
     }
+
+    @Override
+    public void updateOrderPayType(String orderSn, Integer payType) {
+        Example e = new Example(OmsOrder.class);
+
+        e.createCriteria().andEqualTo("orderSn", orderSn);
+
+        OmsOrder omsOrder = new OmsOrder();
+
+        omsOrder.setPayType(payType);
+
+        omsOrderMapper.updateByExampleSelective(omsOrder, e);
+    }
+
+    @Override
+    public void deleteOrderById(String id) {
+        Example e = new Example(OmsOrder.class);
+
+        e.createCriteria().andEqualTo("id", id);
+
+        omsOrderMapper.deleteByExample(e);
+    }
 }

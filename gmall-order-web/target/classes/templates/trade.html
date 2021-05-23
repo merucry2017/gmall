@@ -30,7 +30,7 @@
 					<li th:text="'你好，'+${nickName}"> </li>
 					<li><a class="li_2" href="http://passport.gmall.com:8085/logout" style="color: red">注销</a></li>
 					<li class="spacer"></li>
-					<li><a href="">我的订单</a></li>
+					<li><a onclick="go_one_order()">我的订单</a></li>
 					<li class="spacer"></li>
 
 				</ul>
@@ -140,8 +140,10 @@
 		<script type="text/javascript">
 
 			var token;
+			var nickname;
 			$(document).ready(function () {
 				token = getQueryVariable("token");
+				nickname = getQueryVariable("nickname");
 				$("#token").attr("value", token);
 			})
 
@@ -286,6 +288,10 @@
 				var receiveAddressId = $("input[name='deliveryAddress']:checked").val();
 				$("#receiveAddressId").val(receiveAddressId);
             }
+
+			function go_one_order() {
+				window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+			}
 
             $(function() {
 

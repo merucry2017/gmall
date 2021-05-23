@@ -29,7 +29,7 @@
                     <li><a href="../登录页面\index.html" th:if="${nickname}!=null" th:text="'您好,' + ${nickname}">您好，请登录</a></li>
                     <li><a style="color: red" href="http://passport.gmall.com:8085/logout" class="li_2">注销</a></li>
                     <li class="spacer"></li>
-                    <li><a href="">我的订单</a></li>
+                    <li><a onclick="go_one_order()">我的订单</a></li>
                     <li class="spacer"></li>
 
                 </ul>
@@ -92,11 +92,16 @@
     </div>
     </div>
     </div>
-
     </div>
+    <input type="hidden" id="token" th:value="${token}"/>
+    <input type="hidden" id="nickname" th:value="${nickname}"/>
     </body>
-    <script type="text/javascript" src="/js/success.js">
-
+    <script type="text/javascript" src="/js/success.js"></script>
+    <script type="text/javascript">
+        function go_one_order() {
+            var token = $("#token").val();
+            var nickname = $("#nickname").val();
+            window.location.href="http://order.gmall.com:8086/one_order.html?token="+token+"&nickname="+nickname;
+        }
     </script>
-
 </html>

@@ -26,8 +26,8 @@ public class OmsOrderItem implements Serializable {
     private BigDecimal couponAmount;
     private BigDecimal integrationAmount;
     private BigDecimal realAmount;
-    private int giftIntegration;
-    private int giftGrowth;
+    private Integer giftIntegration;
+    private Integer giftGrowth;
     private String productAttr;
 
     public String getId() {
@@ -198,19 +198,19 @@ public class OmsOrderItem implements Serializable {
         this.realAmount = realAmount;
     }
 
-    public int getGiftIntegration() {
+    public Integer getGiftIntegration() {
         return giftIntegration;
     }
 
-    public void setGiftIntegration(int giftIntegration) {
+    public void setGiftIntegration(Integer giftIntegration) {
         this.giftIntegration = giftIntegration;
     }
 
-    public int getGiftGrowth() {
+    public Integer getGiftGrowth() {
         return giftGrowth;
     }
 
-    public void setGiftGrowth(int giftGrowth) {
+    public void setGiftGrowth(Integer giftGrowth) {
         this.giftGrowth = giftGrowth;
     }
 

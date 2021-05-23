@@ -70,6 +70,8 @@ public class PaymentController {
 
             paymentService.updatePayment(paymentInfo);
 
+            // 更新支付状态，0未支付，1支付宝支付
+            orderService.updateOrderPayType(out_trade_no, 1);
         }
         String nickname = (String) request.getAttribute("nickname");
         String memberId = (String) request.getAttribute("memberId");
